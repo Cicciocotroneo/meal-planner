@@ -537,7 +537,6 @@ spuntini: [
     category: 'spuntini'
   }
 ]
-
 };
 
 // Sostituisci l'oggetto categoryNames esistente con questo
