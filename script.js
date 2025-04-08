@@ -415,9 +415,18 @@ function initializeMealPlanner() {
     mealPlan = {};
     daysOfWeek.forEach(day => {
       mealPlan[day] = {
+        breakfast: [], // Aggiungi colazione
         lunch: [],
-        dinner: []
+        dinner: [],
+        snacks: []     // Aggiungi spuntini
       };
+    });
+    saveToLocalStorage('mealPlan', mealPlan);
+  } else {
+    // Aggiorna piano pasti esistente per aggiungere i nuovi pasti se mancanti
+    daysOfWeek.forEach(day => {
+      if (!mealPlan[day].breakfast) mealPlan[day].breakfast = [];
+      if (!mealPlan[day].snacks) mealPlan[day].snacks = [];
     });
     saveToLocalStorage('mealPlan', mealPlan);
   }
@@ -434,29 +443,72 @@ function renderMealPlan(mealPlan, daysOfWeek) {
   let html = '';
   
   daysOfWeek.forEach(day => {
+    // Contenitore per un giorno intero
+    html += `<div class="day-block">`;
+    
+    // Intestazione del giorno
+    html += `<div class="day-header"><h3>${day}</h3></div>`;
+    
+    // Contenitore per i pasti del giorno
+    html += `<div class="day-meals">`;
+    
+    // Colazione
     html += `
-      <div class="day-container">
-        <div class="day-title">
-          <h3>${day}</h3>
-        </div>
-        
-        <!-- Pranzo -->
-        <div class="meal-slot" data-day="${day}" data-meal-type="lunch">
-          ${renderMeals(mealPlan[day].lunch, day, 'lunch')}
-          <button class="add-meal-button" data-day="${day}" data-meal-type="lunch">
-            + Aggiungi Pranzo
-          </button>
-        </div>
-        
-        <!-- Cena -->
-        <div class="meal-slot" data-day="${day}" data-meal-type="dinner">
-          ${renderMeals(mealPlan[day].dinner, day, 'dinner')}
-          <button class="add-meal-button" data-day="${day}" data-meal-type="dinner">
-            + Aggiungi Cena
+      <div class="meal-container">
+        <h4 class="meal-title">Colazione</h4>
+        <div class="meal-slot breakfast-slot" data-day="${day}" data-meal-type="breakfast">
+          ${renderMeals(mealPlan[day].breakfast, day, 'breakfast')}
+          <button class="add-meal-button" data-day="${day}" data-meal-type="breakfast">
+            + Aggiungi
           </button>
         </div>
       </div>
     `;
+    
+    // Pranzo
+    html += `
+      <div class="meal-container">
+        <h4 class="meal-title">Pranzo</h4>
+        <div class="meal-slot lunch-slot" data-day="${day}" data-meal-type="lunch">
+          ${renderMeals(mealPlan[day].lunch, day, 'lunch')}
+          <button class="add-meal-button" data-day="${day}" data-meal-type="lunch">
+            + Aggiungi
+          </button>
+        </div>
+      </div>
+    `;
+    
+    // Cena
+    html += `
+      <div class="meal-container">
+        <h4 class="meal-title">Cena</h4>
+        <div class="meal-slot dinner-slot" data-day="${day}" data-meal-type="dinner">
+          ${renderMeals(mealPlan[day].dinner, day, 'dinner')}
+          <button class="add-meal-button" data-day="${day}" data-meal-type="dinner">
+            + Aggiungi
+          </button>
+        </div>
+      </div>
+    `;
+    
+    // Spuntini
+    html += `
+      <div class="meal-container">
+        <h4 class="meal-title">Spuntini</h4>
+        <div class="meal-slot snacks-slot" data-day="${day}" data-meal-type="snacks">
+          ${renderMeals(mealPlan[day].snacks, day, 'snacks')}
+          <button class="add-meal-button" data-day="${day}" data-meal-type="snacks">
+            + Aggiungi
+          </button>
+        </div>
+      </div>
+    `;
+    
+    // Chiusura del contenitore dei pasti
+    html += `</div>`;
+    
+    // Chiusura del contenitore del giorno
+    html += `</div>`;
   });
   
   mealPlanGrid.innerHTML = html;
@@ -972,25 +1024,29 @@ function calculateNutritionData(mealPlan) {
       carbs: 0,
       fat: 0,
       meals: {
+        breakfast: { calories: 0, protein: 0, carbs: 0, fat: 0 },
         lunch: { calories: 0, protein: 0, carbs: 0, fat: 0 },
-        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0 }
+        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0 },
+        snacks: { calories: 0, protein: 0, carbs: 0, fat: 0 }
       }
     };
     
-    // Calcola i valori per pranzo e cena
-    ['lunch', 'dinner'].forEach(mealType => {
-      mealPlan[day][mealType].forEach(meal => {
-        dayData.meals[mealType].calories += meal.calories;
-        dayData.meals[mealType].protein += meal.protein;
-        dayData.meals[mealType].carbs += meal.carbs;
-        dayData.meals[mealType].fat += meal.fat;
-      });
-      
-      // Aggiorna i totali giornalieri
-      dayData.calories += dayData.meals[mealType].calories;
-      dayData.protein += dayData.meals[mealType].protein;
-      dayData.carbs += dayData.meals[mealType].carbs;
-      dayData.fat += dayData.meals[mealType].fat;
+    // Calcola i valori per tutti i pasti
+    ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(mealType => {
+      if (mealPlan[day][mealType]) { // Verifica che il pasto esista
+        mealPlan[day][mealType].forEach(meal => {
+          dayData.meals[mealType].calories += meal.calories;
+          dayData.meals[mealType].protein += meal.protein;
+          dayData.meals[mealType].carbs += meal.carbs;
+          dayData.meals[mealType].fat += meal.fat;
+        });
+        
+        // Aggiorna i totali giornalieri
+        dayData.calories += dayData.meals[mealType].calories;
+        dayData.protein += dayData.meals[mealType].protein;
+        dayData.carbs += dayData.meals[mealType].carbs;
+        dayData.fat += dayData.meals[mealType].fat;
+      }
     });
     
     // Aggiorna i totali settimanali
@@ -1113,15 +1169,27 @@ function updateDailyBreakdown(nutritionData) {
         
         <div class="meals-summary">
           <div class="meal-row">
+            <div class="meal-type">Colazione</div>
+            <div class="meal-calories">
+              ${Math.round(dayData.meals.breakfast?.calories || 0)} kcal
+            </div>
+          </div>
+          <div class="meal-row">
             <div class="meal-type">Pranzo</div>
             <div class="meal-calories">
-              ${Math.round(dayData.meals.lunch.calories)} kcal
+              ${Math.round(dayData.meals.lunch?.calories || 0)} kcal
             </div>
           </div>
           <div class="meal-row">
             <div class="meal-type">Cena</div>
             <div class="meal-calories">
-              ${Math.round(dayData.meals.dinner.calories)} kcal
+              ${Math.round(dayData.meals.dinner?.calories || 0)} kcal
+            </div>
+          </div>
+          <div class="meal-row">
+            <div class="meal-type">Spuntini</div>
+            <div class="meal-calories">
+              ${Math.round(dayData.meals.snacks?.calories || 0)} kcal
             </div>
           </div>
         </div>
