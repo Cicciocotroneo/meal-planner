@@ -918,3 +918,108 @@ button:hover {
     grid-template-columns: 1fr;
   }
 }
+/* Nuovo layout per il piano pasti */
+.day-block {
+  margin-bottom: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.day-header {
+  background-color: #4caf50;
+  color: white;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
+.day-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.day-meals {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.meal-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.meal-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+}
+
+.meal-slot {
+  flex: 1;
+  min-height: 100px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+}
+
+.breakfast-slot {
+  background-color: #e8f5e9;
+  border-color: #c8e6c9;
+}
+
+.lunch-slot {
+  background-color: #f1f8e9;
+  border-color: #dcedc8;
+}
+
+.dinner-slot {
+  background-color: #fffde7;
+  border-color: #fff9c4;
+}
+
+.snacks-slot {
+  background-color: #f3e5f5;
+  border-color: #e1bee7;
+}
+
+.add-meal-button {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  background-color: #e0e0e0;
+  color: #555;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-meal-button:hover {
+  background-color: #bdbdbd;
+}
+
+/* Stili responsive per il piano pasti */
+@media (max-width: 992px) {
+  .day-meals {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+  }
+}
+
+@media (max-width: 576px) {
+  .day-meals {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, auto);
+  }
+  
+  .meal-container {
+    margin-bottom: 0.5rem;
+  }
+}
