@@ -1018,7 +1018,7 @@ button:hover {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, auto);
   }
-  
+ 
   .meal-container {
     margin-bottom: 0.5rem;
   }
