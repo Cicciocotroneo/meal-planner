@@ -866,3 +866,334 @@ function updateDailyBreakdown(nutritionData) {
   
   daysGrid.innerHTML = html;
 }
+// Aggiungere questa funzione dopo la funzione addFoodToMealPlan
+
+function suggestMealPlan(updatedDay, updatedMealType) {
+  // Ottiene il piano pasti corrente
+  const mealPlan = loadFromLocalStorage('mealPlan');
+  const daysOfWeek = Object.keys(weeklyPlanTemplate);
+  
+  // Traccia le categorie già utilizzate nella settimana
+  const usedCategories = {
+    carneBianca: 0,
+    pesce: 0,
+    uova: 0,
+    formaggi: 0,
+    legumi: 0,
+    cerealIntegrali: 0
+  };
+  
+  // Conta le categorie già utilizzate
+  daysOfWeek.forEach(day => {
+    ['lunch', 'dinner'].forEach(mealType => {
+      mealPlan[day][mealType].forEach(meal => {
+        if (usedCategories.hasOwnProperty(meal.category)) {
+          usedCategories[meal.category]++;
+        }
+      });
+    });
+  });
+  
+  // Determina la categoria principale del pasto aggiornato
+  const updatedMeal = mealPlan[updatedDay][updatedMealType];
+  let updatedMealCategory = null;
+  
+  if (updatedMeal.length > 0) {
+    updatedMealCategory = updatedMeal[0].category;
+  }
+  
+  // Suggerimenti per la cena in base al pranzo
+  if (updatedMealType === 'lunch' && updatedMealCategory) {
+    // Genera suggerimento per la cena dello stesso giorno
+    const dinnerSuggestion = suggestComplementaryMeal(updatedMealCategory, usedCategories);
+    
+    if (dinnerSuggestion) {
+      showSuggestionModal(updatedDay, 'dinner', dinnerSuggestion, usedCategories);
+    }
+  }
+  
+  // Suggerimenti per il resto della settimana
+  const weekSuggestions = suggestWeeklyBalance(usedCategories);
+  if (weekSuggestions) {
+    // Mostra questi suggerimenti nella UI
+    displayWeeklySuggestions(weekSuggestions);
+  }
+}
+
+function suggestComplementaryMeal(category, usedCategories) {
+  // Regole di abbinamento basate sulle linee guida
+  const pairings = {
+    cerealIntegrali: ['legumi', 'pesce', 'uova', 'formaggi'],
+    carneBianca: ['verdure', 'cerealIntegrali'],
+    pesce: ['verdure', 'cerealIntegrali'],
+    legumi: ['cerealIntegrali', 'verdure'],
+    uova: ['verdure', 'cerealIntegrali'],
+    formaggi: ['verdure', 'cerealIntegrali'],
+    verdure: ['carneBianca', 'pesce', 'uova', 'formaggi', 'legumi']
+  };
+  
+  // Verifica limiti settimanali
+  const limits = {
+    carneBianca: 4, // 3-4 volte a settimana
+    pesce: 3,      // 2-3 volte a settimana
+    uova: 2,       // 1-2 volte a settimana
+    formaggi: 2,   // 1-2 volte a settimana
+    legumi: 4      // almeno 3 volte a settimana
+  };
+  
+  // Ottiene i possibili abbinamenti
+  const possiblePairings = pairings[category] || [];
+  
+  // Filtra in base ai limiti settimanali
+  const validPairings = possiblePairings.filter(pairing => {
+    if (limits[pairing] && usedCategories[pairing] >= limits[pairing]) {
+      return false;
+    }
+    return true;
+  });
+  
+  // Se ci sono abbinamenti validi, seleziona il migliore
+  if (validPairings.length > 0) {
+    // Priorità: prima le categorie meno utilizzate
+    validPairings.sort((a, b) => {
+      if (limits[a] && limits[b]) {
+        // Se entrambe hanno limiti, confronta l'utilizzo rispetto al limite
+        const aRatio = usedCategories[a] / limits[a];
+        const bRatio = usedCategories[b] / limits[b];
+        return aRatio - bRatio;
+      }
+      return (usedCategories[a] || 0) - (usedCategories[b] || 0);
+    });
+    
+    return validPairings[0];
+  }
+  
+  return null;
+}
+
+function suggestWeeklyBalance(usedCategories) {
+  // Raccomandazioni per l'intera settimana
+  const recommendations = {
+    carneBianca: { min: 3, max: 4, current: usedCategories.carneBianca || 0 },
+    pesce: { min: 2, max: 3, current: usedCategories.pesce || 0 },
+    uova: { min: 1, max: 2, current: usedCategories.uova || 0 },
+    formaggi: { min: 1, max: 2, current: usedCategories.formaggi || 0 },
+    legumi: { min: 3, max: 5, current: usedCategories.legumi || 0 }
+  };
+  
+  // Verifica se ci sono categorie che necessitano di essere aumentate o diminuite
+  const suggestions = {};
+  
+  Object.keys(recommendations).forEach(category => {
+    const rec = recommendations[category];
+    if (rec.current < rec.min) {
+      suggestions[category] = { 
+        action: 'increase', 
+        current: rec.current, 
+        target: rec.min,
+        diff: rec.min - rec.current 
+      };
+    } else if (rec.current > rec.max) {
+      suggestions[category] = { 
+        action: 'decrease', 
+        current: rec.current, 
+        target: rec.max,
+        diff: rec.current - rec.max 
+      };
+    }
+  });
+  
+  return Object.keys(suggestions).length > 0 ? suggestions : null;
+}
+
+function showSuggestionModal(day, mealType, category, usedCategories) {
+  // Crea un elemento div per il modale
+  const modalId = 'suggestion-modal';
+  let modal = document.getElementById(modalId);
+  
+  // Se il modale non esiste, crealo
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = modalId;
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+          <h3 id="suggestion-title">Suggerimento</h3>
+          <button class="close-modal-button">&times;</button>
+        </div>
+        <div id="suggestion-body" class="modal-body" style="padding: 1.5rem;">
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; padding: 1rem;">
+          <button id="ignore-suggestion" class="cancel-button">Ignora</button>
+          <button id="apply-suggestion" class="add-food-button">Applica</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Aggiungi event listener per chiudere il modale
+    modal.querySelector('.close-modal-button').addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    
+    // Chiudi il modale cliccando fuori
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
+  
+  // Aggiorna il contenuto del modale
+  const categoryName = categoryNames[category];
+  const mealTypeText = mealType === 'lunch' ? 'pranzo' : 'cena';
+  document.getElementById('suggestion-title').textContent = `Suggerimento per ${day} - ${mealTypeText.charAt(0).toUpperCase() + mealTypeText.slice(1)}`;
+  
+  let additionalInfo = '';
+  
+  if (usedCategories[category] !== undefined) {
+    const limits = {
+      carneBianca: { min: 3, max: 4 },
+      pesce: { min: 2, max: 3 },
+      uova: { min: 1, max: 2 },
+      formaggi: { min: 1, max: 2 },
+      legumi: { min: 3, max: 5 }
+    };
+    
+    if (limits[category]) {
+      additionalInfo = `<p>Attualmente hai pianificato <strong>${usedCategories[category]}</strong> pasti con ${categoryName.toLowerCase()} questa settimana. La raccomandazione è di ${limits[category].min}-${limits[category].max} volte a settimana.</p>`;
+    }
+  }
+  
+  document.getElementById('suggestion-body').innerHTML = `
+    <p>In base alla tua selezione per il pranzo, ti suggeriamo di aggiungere <strong>${categoryName}</strong> per la ${mealTypeText} di ${day}.</p>
+    ${additionalInfo}
+    <p>Questo abbinamento segue le linee guida per un'alimentazione bilanciata.</p>
+  `;
+  
+  // Aggiorna i pulsanti
+  const ignoreButton = document.getElementById('ignore-suggestion');
+  const applyButton = document.getElementById('apply-suggestion');
+  
+  ignoreButton.onclick = () => {
+    modal.style.display = 'none';
+  };
+  
+  applyButton.onclick = () => {
+    // Apre il modale di selezione cibo con la categoria suggerita
+    modal.style.display = 'none';
+    openFoodSelectionModal(day, mealType, category);
+  };
+  
+  // Mostra il modale
+  modal.style.display = 'flex';
+}
+
+function displayWeeklySuggestions(suggestions) {
+  // Crea un elemento per mostrare i suggerimenti settimanali
+  let suggestionBox = document.getElementById('weekly-suggestions');
+  
+  if (!suggestionBox) {
+    suggestionBox = document.createElement('div');
+    suggestionBox.id = 'weekly-suggestions';
+    suggestionBox.className = 'nutrition-card';
+    suggestionBox.style.marginTop = '1rem';
+    suggestionBox.style.backgroundColor = '#f1f8e9';
+    suggestionBox.style.borderLeft = '4px solid #8bc34a';
+    
+    // Inserisci il box dopo il piano pasti
+    const mealPlanContainer = document.querySelector('.meal-plan-container');
+    mealPlanContainer.parentNode.insertBefore(suggestionBox, mealPlanContainer.nextSibling);
+  }
+  
+  let html = '<h3>Suggerimenti per la settimana</h3>';
+  html += '<p>Per un piano alimentare bilanciato, considera queste raccomandazioni:</p>';
+  html += '<ul style="margin-left: 1.5rem;">';
+  
+  Object.keys(suggestions).forEach(category => {
+    const suggestion = suggestions[category];
+    const categoryName = categoryNames[category];
+    
+    if (suggestion.action === 'increase') {
+      html += `<li>Aumenta il consumo di <strong>${categoryName}</strong>: attualmente ${suggestion.current} pasti, raccomandati almeno ${suggestion.target}</li>`;
+    } else if (suggestion.action === 'decrease') {
+      html += `<li>Riduci il consumo di <strong>${categoryName}</strong>: attualmente ${suggestion.current} pasti, raccomandati massimo ${suggestion.target}</li>`;
+    }
+  });
+  
+  html += '</ul>';
+  suggestionBox.innerHTML = html;
+}
+
+// Modifica la funzione openFoodSelectionModal per accettare un parametro di categoria opzionale
+function openFoodSelectionModal(day, mealType, defaultCategory = null) {
+  const modal = document.getElementById('food-selector-modal');
+  const modalTitle = document.getElementById('modal-title');
+  const categoryTabs = document.getElementById('category-tabs');
+  const foodList = document.getElementById('modal-food-list');
+  
+  // Imposta il titolo del modale
+  modalTitle.textContent = `Seleziona Alimento per ${day} - ${mealType === 'lunch' ? 'Pranzo' : 'Cena'}`;
+  
+  // Crea le tab per le categorie
+  let tabsHtml = '';
+  Object.keys(categoryNames).forEach(category => {
+    tabsHtml += `<button class="category-tab${defaultCategory === category ? ' active' : ''}" data-category="${category}">${categoryNames[category]}</button>`;
+  });
+  categoryTabs.innerHTML = tabsHtml;
+  
+  // Seleziona la categoria predefinita o la prima categoria
+  const categoryToShow = defaultCategory || categoryTabs.querySelector('.category-tab').getAttribute('data-category');
+  if (!defaultCategory) {
+    categoryTabs.querySelector('.category-tab').classList.add('active');
+  }
+  
+  showFoodsInModal(categoryToShow, day, mealType);
+  
+  // Aggiungi eventi alle tab
+  categoryTabs.querySelectorAll('.category-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      // Rimuove active da tutte le tab
+      categoryTabs.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+      
+      // Aggiunge active alla tab cliccata
+      this.classList.add('active');
+      
+      // Mostra gli alimenti della categoria selezionata
+      const category = this.getAttribute('data-category');
+      showFoodsInModal(category, day, mealType);
+    });
+  });
+  
+  // Mostra il modale
+  modal.style.display = 'flex';
+}
+
+// Modifica la funzione addFoodToMealPlan per includere il suggerimento
+function addFoodToMealPlan(food, day, mealType) {
+  // Ottiene il piano pasti corrente
+  const mealPlan = loadFromLocalStorage('mealPlan');
+  
+  // Aggiunge l'alimento
+  mealPlan[day][mealType].push({
+    id: food.id,
+    name: food.name,
+    calories: food.calories,
+    protein: food.protein,
+    carbs: food.carbs,
+    fat: food.fat,
+    portion: food.portion,
+    category: food.category
+  });
+  
+  // Salva e aggiorna
+  saveToLocalStorage('mealPlan', mealPlan);
+  renderMealPlan(mealPlan, Object.keys(weeklyPlanTemplate));
+  
+  // Aggiorna il riepilogo nutrizionale
+  updateNutritionSummary();
+  
+  // Suggerisci il resto del piano pasti
+  suggestMealPlan(day, mealType);
+}
