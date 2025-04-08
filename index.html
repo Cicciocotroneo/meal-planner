@@ -86,6 +86,15 @@
                     <h3 id="category-title">Alimenti</h3>
                     <div id="food-table-container"></div>
                 </div>
+<div class="export-import-section">
+  <h3>Esporta/Importa Database Alimenti</h3>
+  <div class="button-group">
+    <button id="export-foods-button" class="secondary-button">Esporta Database</button>
+    <label for="import-foods-input" class="secondary-button">Importa Database</label>
+    <input type="file" id="import-foods-input" accept=".json" style="display: none;">
+  </div>
+</div>
+                
                 <div class="add-food-form">
                     <h3>Aggiungi Nuovo Alimento</h3>
                     <div class="form-grid">
@@ -139,6 +148,25 @@
                         <div class="food-list" id="modal-food-list"></div>
                     </div>
                 </div>
+                <div class="export-import-section">
+  <h3>Gestione Piani Alimentari</h3>
+  <div class="save-diet-form">
+    <input type="text" id="diet-name" placeholder="Nome del piano alimentare">
+    <button id="save-diet-button" class="secondary-button">Salva Piano</button>
+  </div>
+  <div class="saved-diets-section">
+    <select id="saved-diets-select">
+      <option value="" selected disabled>Seleziona un piano salvato</option>
+    </select>
+    <button id="load-diet-button" class="secondary-button">Carica</button>
+    <button id="delete-diet-button" class="delete-profile-button">Elimina</button>
+  </div>
+  <div class="button-group">
+    <button id="export-diet-button" class="secondary-button">Esporta Piano Corrente</button>
+    <label for="import-diet-input" class="secondary-button">Importa Piano</label>
+    <input type="file" id="import-diet-input" accept=".json" style="display: none;">
+  </div>
+</div>
             </section>
 
             <!-- Sezione Riepilogo Nutrizionale -->
@@ -185,6 +213,7 @@
                         <div id="days-grid" class="days-grid"></div>
                     </div>
                 </div>
+               
             </section>
         </main>
 
