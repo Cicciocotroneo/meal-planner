@@ -1131,3 +1131,338 @@ function updateDailyBreakdown(nutritionData) {
   
   daysGrid.innerHTML = html;
 }
+// ============================
+// GESTIONE ESPORTAZIONE/IMPORTAZIONE
+// ============================
+
+// Inizializza le funzionalità di esportazione/importazione
+document.addEventListener('DOMContentLoaded', function() {
+  // Inizializza esportazione/importazione database alimenti
+  initializeFoodExportImport();
+  
+  // Inizializza esportazione/importazione piano pasti
+  initializeDietExportImport();
+  
+  // Inizializza gestione diete salvate
+  initializeSavedDiets();
+});
+
+// Funzioni per esportazione/importazione database alimenti
+function initializeFoodExportImport() {
+  // Bottone esporta database
+  document.getElementById('export-foods-button')?.addEventListener('click', function() {
+    exportFoodDatabase();
+  });
+  
+  // Input importa database
+  document.getElementById('import-foods-input')?.addEventListener('change', function(event) {
+    importFoodDatabase(event);
+  });
+}
+
+function exportFoodDatabase() {
+  // Carica il database personalizzato
+  const customFoods = loadFromLocalStorage('customFoods', {});
+  
+  // Crea un oggetto contenente la data di esportazione e i dati
+  const exportData = {
+    type: 'food_database',
+    date: new Date().toISOString(),
+    data: customFoods
+  };
+  
+  // Converte in JSON e crea URL per il download
+  const jsonString = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  // Crea un link di download e lo attiva
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `alimenti_personalizzati_${formatDate(new Date())}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importFoodDatabase(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      
+      // Verifica la validità del file importato
+      if (importedData.type !== 'food_database' || !importedData.data) {
+        throw new Error('Formato file non valido');
+      }
+      
+      // Chiede conferma all'utente
+      if (confirm('Importare il database? Sovrascriverà eventuali alimenti personalizzati esistenti con lo stesso ID.')) {
+        // Carica il database attuale
+        const currentCustomFoods = loadFromLocalStorage('customFoods', {});
+        
+        // Fonde i database
+        const mergedFoods = { ...currentCustomFoods };
+        
+        // Per ogni categoria nel database importato
+        Object.keys(importedData.data).forEach(category => {
+          if (!mergedFoods[category]) {
+            mergedFoods[category] = [];
+          }
+          
+          // Aggiunge o sostituisce gli alimenti
+          importedData.data[category].forEach(importedFood => {
+            // Controlla se l'alimento esiste già
+            const existingIndex = mergedFoods[category].findIndex(food => food.id === importedFood.id);
+            
+            if (existingIndex >= 0) {
+              // Sostituisce l'alimento esistente
+              mergedFoods[category][existingIndex] = importedFood;
+            } else {
+              // Aggiunge il nuovo alimento
+              mergedFoods[category].push(importedFood);
+            }
+          });
+        });
+        
+        // Salva il database aggiornato
+        saveToLocalStorage('customFoods', mergedFoods);
+        
+        // Aggiorna la visualizzazione
+        const currentCategory = document.getElementById('food-category').value;
+        showFoodsForCategory(currentCategory, mergedFoods);
+        
+        alert('Database importato con successo!');
+      }
+    } catch (error) {
+      alert('Errore durante l\'importazione: ' + error.message);
+    }
+    
+    // Reset del campo file
+    event.target.value = '';
+  };
+  
+  reader.readAsText(file);
+}
+
+// Funzioni per esportazione/importazione piano pasti
+function initializeDietExportImport() {
+  // Bottone esporta piano
+  document.getElementById('export-diet-button')?.addEventListener('click', function() {
+    exportDiet();
+  });
+  
+  // Input importa piano
+  document.getElementById('import-diet-input')?.addEventListener('change', function(event) {
+    importDiet(event);
+  });
+}
+
+function exportDiet() {
+  // Carica il piano pasti attuale
+  const mealPlan = loadFromLocalStorage('mealPlan', {});
+  
+  // Crea un oggetto contenente la data di esportazione e i dati
+  const exportData = {
+    type: 'meal_plan',
+    date: new Date().toISOString(),
+    data: mealPlan
+  };
+  
+  // Converte in JSON e crea URL per il download
+  const jsonString = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  // Crea un link di download e lo attiva
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `piano_alimentare_${formatDate(new Date())}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importDiet(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      
+      // Verifica la validità del file importato
+      if (importedData.type !== 'meal_plan' || !importedData.data) {
+        throw new Error('Formato file non valido');
+      }
+      
+      // Chiede conferma all'utente
+      if (confirm('Importare il piano alimentare? Sovrascriverà il piano corrente.')) {
+        // Salva il piano importato
+        saveToLocalStorage('mealPlan', importedData.data);
+        
+        // Aggiorna la visualizzazione
+        renderMealPlan(importedData.data, Object.keys(weeklyPlanTemplate));
+        
+        // Aggiorna il riepilogo nutrizionale
+        updateNutritionSummary();
+        
+        alert('Piano alimentare importato con successo!');
+      }
+    } catch (error) {
+      alert('Errore durante l\'importazione: ' + error.message);
+    }
+    
+    // Reset del campo file
+    event.target.value = '';
+  };
+  
+  reader.readAsText(file);
+}
+
+// Funzioni per gestione diete salvate
+function initializeSavedDiets() {
+  // Carica le diete salvate
+  updateSavedDietsSelector();
+  
+  // Bottone salva dieta
+  document.getElementById('save-diet-button')?.addEventListener('click', function() {
+    saveDiet();
+  });
+  
+  // Bottone carica dieta
+  document.getElementById('load-diet-button')?.addEventListener('click', function() {
+    loadDiet();
+  });
+  
+  // Bottone elimina dieta
+  document.getElementById('delete-diet-button')?.addEventListener('click', function() {
+    deleteDiet();
+  });
+}
+
+function saveDiet() {
+  const dietName = document.getElementById('diet-name').value.trim();
+  
+  if (!dietName) {
+    alert('Per favore, inserisci un nome per il piano alimentare.');
+    return;
+  }
+  
+  // Carica il piano pasti attuale e le diete salvate
+  const currentMealPlan = loadFromLocalStorage('mealPlan', {});
+  const savedDiets = loadFromLocalStorage('savedDiets', {});
+  
+  // Crea l'oggetto dieta
+  const diet = {
+    id: generateId(),
+    name: dietName,
+    date: new Date().toISOString(),
+    mealPlan: currentMealPlan
+  };
+  
+  // Aggiunge la dieta alle diete salvate
+  savedDiets[diet.id] = diet;
+  saveToLocalStorage('savedDiets', savedDiets);
+  
+  // Aggiorna il selettore delle diete
+  updateSavedDietsSelector();
+  
+  // Svuota il campo del nome
+  document.getElementById('diet-name').value = '';
+  
+  alert('Piano alimentare salvato con successo!');
+}
+
+function loadDiet() {
+  const selectedDietId = document.getElementById('saved-diets-select').value;
+  
+  if (!selectedDietId) {
+    alert('Per favore, seleziona un piano alimentare da caricare.');
+    return;
+  }
+  
+  // Carica le diete salvate
+  const savedDiets = loadFromLocalStorage('savedDiets', {});
+  
+  // Verifica che la dieta esista
+  if (!savedDiets[selectedDietId]) {
+    alert('Piano alimentare non trovato.');
+    return;
+  }
+  
+  // Chiede conferma all'utente
+  if (confirm('Caricare il piano alimentare selezionato? Sovrascriverà il piano corrente.')) {
+    // Salva il piano importato
+    saveToLocalStorage('mealPlan', savedDiets[selectedDietId].mealPlan);
+    
+    // Aggiorna la visualizzazione
+    renderMealPlan(savedDiets[selectedDietId].mealPlan, Object.keys(weeklyPlanTemplate));
+    
+    // Aggiorna il riepilogo nutrizionale
+    updateNutritionSummary();
+    
+    alert('Piano alimentare caricato con successo!');
+  }
+}
+
+function deleteDiet() {
+  const selectedDietId = document.getElementById('saved-diets-select').value;
+  
+  if (!selectedDietId) {
+    alert('Per favore, seleziona un piano alimentare da eliminare.');
+    return;
+  }
+  
+  // Carica le diete salvate
+  const savedDiets = loadFromLocalStorage('savedDiets', {});
+  
+  // Verifica che la dieta esista
+  if (!savedDiets[selectedDietId]) {
+    alert('Piano alimentare non trovato.');
+    return;
+  }
+  
+  // Chiede conferma all'utente
+  if (confirm('Sei sicuro di voler eliminare questo piano alimentare? Questa azione non può essere annullata.')) {
+    // Elimina la dieta
+    delete savedDiets[selectedDietId];
+    saveToLocalStorage('savedDiets', savedDiets);
+    
+    // Aggiorna il selettore delle diete
+    updateSavedDietsSelector();
+    
+    alert('Piano alimentare eliminato con successo!');
+  }
+}
+
+function updateSavedDietsSelector() {
+  const savedDietsSelect = document.getElementById('saved-diets-select');
+  const savedDiets = loadFromLocalStorage('savedDiets', {});
+  
+  // Svuota il selettore
+  savedDietsSelect.innerHTML = '<option value="" selected disabled>Seleziona un piano salvato</option>';
+  
+  // Popola il selettore con le diete salvate
+  Object.values(savedDiets).sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(diet => {
+    const option = document.createElement('option');
+    option.value = diet.id;
+    option.textContent = `${diet.name} (${formatDateShort(new Date(diet.date))})`;
+    savedDietsSelect.appendChild(option);
+  });
+}
+
+// Utility per formattare le date
+function formatDate(date) {
+  return date.toISOString().split('T')[0]; // YYYY-MM-DD
+}
+
+function formatDateShort(date) {
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+}
