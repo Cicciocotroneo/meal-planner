@@ -53,7 +53,7 @@ const foodDatabase = {
       category: 'cerealIntegrali'
     }
   ],
-  
+
   // Carne bianca
   carneBianca: [
     { 
@@ -107,7 +107,7 @@ const foodDatabase = {
       category: 'carneBianca'
     }
   ],
-  
+
   // Pesce
   pesce: [
     { 
@@ -161,7 +161,7 @@ const foodDatabase = {
       category: 'pesce'
     }
   ],
-  
+
   // Legumi
   legumi: [
     { 
@@ -215,7 +215,7 @@ const foodDatabase = {
       category: 'legumi'
     }
   ],
-  
+
   // Uova
   uova: [
     { 
@@ -269,7 +269,7 @@ const foodDatabase = {
       category: 'uova'
     }
   ],
-  
+
   // Formaggi
   formaggi: [
     { 
@@ -323,7 +323,7 @@ const foodDatabase = {
       category: 'formaggi'
     }
   ],
-  
+
   // Verdure
   verdure: [
     { 
@@ -377,7 +377,7 @@ const foodDatabase = {
       category: 'verdure'
     }
   ],
-  
+
   // Grassi sani
   grassiSani: [
     { 
@@ -430,116 +430,118 @@ const foodDatabase = {
       portion: '10g',
       category: 'grassiSani'
     }
-  ], 
+  ],
 
-// Aggiungi prima della chiusura dell'oggetto foodDatabase
-colazione: [
-  { 
-    id: 'col1', 
-    name: 'Yogurt greco con miele e frutta secca',
-    calories: 220,
-    protein: 15,
-    carbs: 20,
-    fat: 10,
-    portion: '150g yogurt + 10g miele + 15g frutta secca',
-    category: 'colazione'
-  },
-  { 
-    id: 'col2', 
-    name: 'Fette biscottate integrali con marmellata',
-    calories: 180,
-    protein: 4,
-    carbs: 35,
-    fat: 3,
-    portion: '3 fette biscottate + 20g marmellata',
-    category: 'colazione'
-  },
-  { 
-    id: 'col3', 
-    name: 'Porridge di avena con frutta fresca',
-    calories: 250,
-    protein: 8,
-    carbs: 40,
-    fat: 6,
-    portion: '50g fiocchi d\'avena + 150ml latte + frutta',
-    category: 'colazione'
-  },
-  { 
-    id: 'col4', 
-    name: 'Frutta fresca con frutta secca',
-    calories: 150,
-    protein: 3,
-    carbs: 25,
-    fat: 5,
-    portion: '200g frutta fresca + 15g frutta secca',
-    category: 'colazione'
-  },
-  { 
-    id: 'col5', 
-    name: 'Tè verde con biscotti integrali',
-    calories: 120,
-    protein: 2,
-    carbs: 22,
-    fat: 3,
-    portion: '3 biscotti integrali + tè',
-    category: 'colazione'
-  }
-],
-spuntini: [
-  { 
-    id: 'sp1', 
-    name: 'Frutta fresca di stagione',
-    calories: 80,
-    protein: 1,
-    carbs: 20,
-    fat: 0,
-    portion: '1 frutto medio',
-    category: 'spuntini'
-  },
-  { 
-    id: 'sp2', 
-    name: 'Yogurt naturale',
-    calories: 100,
-    protein: 10,
-    carbs: 8,
-    fat: 2,
-    portion: '125g',
-    category: 'spuntini'
-  },
-  { 
-    id: 'sp3', 
-    name: 'Frutta secca mista',
-    calories: 170,
-    protein: 5,
-    carbs: 7,
-    fat: 14,
-    portion: '30g',
-    category: 'spuntini'
-  },
-  { 
-    id: 'sp4', 
-    name: 'Barretta di cereali',
-    calories: 120,
-    protein: 3,
-    carbs: 20,
-    fat: 4,
-    portion: '1 barretta (30g)',
-    category: 'spuntini'
-  },
-  { 
-    id: 'sp5', 
-    name: 'Gallette di riso con formaggio spalmabile light',
-    calories: 90,
-    protein: 4,
-    carbs: 15,
-    fat: 2,
-    portion: '2 gallette + 10g formaggio',
-    category: 'spuntini'
-  }
-]
+  // Colazione
+  colazione: [
+    { 
+      id: 'col1', 
+      name: 'Yogurt greco con miele e frutta secca',
+      calories: 220,
+      protein: 15,
+      carbs: 20,
+      fat: 10,
+      portion: '150g yogurt + 10g miele + 15g frutta secca',
+      category: 'colazione'
+    },
+    { 
+      id: 'col2', 
+      name: 'Fette biscottate integrali con marmellata',
+      calories: 180,
+      protein: 4,
+      carbs: 35,
+      fat: 3,
+      portion: '3 fette biscottate + 20g marmellata',
+      category: 'colazione'
+    },
+    { 
+      id: 'col3', 
+      name: 'Porridge di avena con frutta fresca',
+      calories: 250,
+      protein: 8,
+      carbs: 40,
+      fat: 6,
+      portion: '50g fiocchi d\'avena + 150ml latte + frutta',
+      category: 'colazione'
+    },
+    { 
+      id: 'col4', 
+      name: 'Frutta fresca con frutta secca',
+      calories: 150,
+      protein: 3,
+      carbs: 25,
+      fat: 5,
+      portion: '200g frutta fresca + 15g frutta secca',
+      category: 'colazione'
+    },
+    { 
+      id: 'col5', 
+      name: 'Tè verde con biscotti integrali',
+      calories: 120,
+      protein: 2,
+      carbs: 22,
+      fat: 3,
+      portion: '3 biscotti integrali + tè',
+      category: 'colazione'
+    }
+  ],
+
+  // Spuntini
+  spuntini: [
+    { 
+      id: 'sp1', 
+      name: 'Frutta fresca di stagione',
+      calories: 80,
+      protein: 1,
+      carbs: 20,
+      fat: 0,
+      portion: '1 frutto medio',
+      category: 'spuntini'
+    },
+    { 
+      id: 'sp2', 
+      name: 'Yogurt naturale',
+      calories: 100,
+      protein: 10,
+      carbs: 8,
+      fat: 2,
+      portion: '125g',
+      category: 'spuntini'
+    },
+    { 
+      id: 'sp3', 
+      name: 'Frutta secca mista',
+      calories: 170,
+      protein: 5,
+      carbs: 7,
+      fat: 14,
+      portion: '30g',
+      category: 'spuntini'
+    },
+    { 
+      id: 'sp4', 
+      name: 'Barretta di cereali',
+      calories: 120,
+      protein: 3,
+      carbs: 20,
+      fat: 4,
+      portion: '1 barretta (30g)',
+      category: 'spuntini'
+    },
+    { 
+      id: 'sp5', 
+      name: 'Gallette di riso con formaggio spalmabile light',
+      calories: 90,
+      protein: 4,
+      carbs: 15,
+      fat: 2,
+      portion: '2 gallette + 10g formaggio',
+      category: 'spuntini'
+    }
+  ]
 };
 
-// Sostituisci l'oggetto categoryNames esistente con questo
+// Nomi delle categorie in italiano
 const categoryNames = {
   cerealIntegrali: 'Cereali Integrali',
   carneBianca: 'Carne Bianca',
