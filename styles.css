@@ -1,1 +1,735 @@
+/* Reset di base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f7fa;
+}
+
+/* Layout dell'applicazione */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-header {
+  background-color: #4caf50;
+  color: white;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-tabs {
+  display: flex;
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 1rem;
+}
+
+.tab-button {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tab-button:hover {
+  color: #4caf50;
+}
+
+.tab-button.active {
+  color: #4caf50;
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #4caf50;
+}
+
+.app-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tab-section {
+  display: none;
+}
+
+.tab-section.active {
+  display: block;
+}
+
+.app-footer {
+  background-color: #f1f1f1;
+  padding: 1rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
+
+/* Stili comuni per componenti */
+h2 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  font-size: 1.8rem;
+}
+
+h3 {
+  margin-bottom: 1rem;
+  color: #34495e;
+  font-size: 1.4rem;
+}
+
+h4 {
+  margin-bottom: 0.8rem;
+  color: #3d4852;
+  font-size: 1.2rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #388e3c;
+}
+
+.delete-profile-button,
+.remove-meal-button,
+.cancel-button {
+  background-color: #f44336;
+}
+
+.delete-profile-button:hover,
+.remove-meal-button:hover,
+.cancel-button:hover {
+  background-color: #d32f2f;
+}
+
+.recalculate-button {
+  background-color: #2196f3;
+}
+
+.recalculate-button:hover {
+  background-color: #1976d2;
+}
+
+/* Stili per la sezione Profilo */
+#profile-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#profile-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+#profile-selector select {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+#profile-details {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.profile-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  margin-bottom: 0.5rem;
+}
+
+.info-label {
+  font-weight: 600;
+  margin-right: 0.5rem;
+  color: #555;
+}
+
+.macros-grid {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.macro-box {
+  background-color: white;
+  border-radius: 6px;
+  padding: 1rem;
+  flex: 1;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.macro-title {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.25rem;
+}
+
+.macro-amount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.macro-percent {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Stili per la sezione Alimenti */
+.food-items-list {
+  margin-bottom: 2rem;
+}
+
+.food-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.food-table th {
+  background-color: #f1f1f1;
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+
+.food-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #eee;
+}
+
+.food-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.custom-food {
+  background-color: #e8f5e9;
+}
+
+.add-food-form {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 6px;
+  margin-top: 2rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+#add-food-button {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Stili per Piano Settimanale */
+.meal-plan-container {
+  margin-bottom: 2rem;
+}
+
+.meal-times-header {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.meal-time-title {
+  font-weight: 600;
+  color: #555;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+#meal-plan-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.day-container {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.day-title {
+  background-color: #f1f1f1;
+  padding: 1rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.day-title h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.meal-slot {
+  min-height: 120px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 1rem;
+  transition: background-color 0.3s;
+}
+
+.meal-item {
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.meal-name {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.meal-nutrition {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.remove-meal-button {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  background-color: transparent;
+  color: #f44336;
+  font-size: 1.2rem;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.remove-meal-button:hover {
+  background-color: #ffebee;
+}
+
+.add-meal-button {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #e8f5e9;
+  color: #4caf50;
+  border: 1px dashed #4caf50;
+}
+
+.add-meal-button:hover {
+  background-color: #c8e6c9;
+}
+
+/* Modal per selezione cibo */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.close-modal-button {
+  background-color: transparent;
+  color: #666;
+  font-size: 1.5rem;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-modal-button:hover {
+  background-color: #f1f1f1;
+}
+
+.category-tabs {
+  display: flex;
+  overflow-x: auto;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.category-tab {
+  padding: 1rem 1.5rem;
+  background-color: transparent;
+  color: #666;
+  border: none;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.category-tab:hover {
+  color: #4caf50;
+  background-color: transparent;
+}
+
+.category-tab.active {
+  color: #4caf50;
+  border-bottom-color: #4caf50;
+}
+
+.food-list {
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.food-item {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.food-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  background-color: #e8f5e9;
+}
+
+.food-name {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.food-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.food-macros {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.macro {
+  background-color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Stili per Riepilogo Nutrizionale */
+.nutrition-summary {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.summary-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 992px) {
+  .summary-content {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.weekly-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.nutrition-card {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.total-calories {
+  text-align: center;
+}
+
+.total-calories h4 {
+  color: #4caf50;
+  margin-bottom: 0.5rem;
+}
+
+.total-calories .value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.daily-average {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.target-comparison {
+  margin-top: 1rem;
+}
+
+.percentage-bar {
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.percentage-fill {
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 4px;
+}
+
+.percentage-label {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+}
+
+.macros-table {
+  margin-top: 1rem;
+}
+
+.macro-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.macro-row:last-child {
+  border-bottom: none;
+}
+
+.macro-name {
+  font-weight: 600;
+  color: #555;
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.day-card {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.day-card h4 {
+  color: #4caf50;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.day-total {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.day-macros {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.macro-pill {
+  background-color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.meals-summary {
+  font-size: 0.9rem;
+}
+
+.meal-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.meal-row:last-child {
+  border-bottom: none;
+}
+
+.meal-type {
+  font-weight: 600;
+  color: #555;
+}
+
+/* Stili responsive */
+@media (max-width: 768px) {
+  .app-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tab-button {
+    flex: 1 0 50%;
+    text-align: center;
+    padding: 0.75rem 1rem;
+  }
+  
+  .app-content {
+    padding: 1rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .day-container {
+    grid-template-columns: 80px 1fr 1fr;
+  }
+  
+  .meal-times-header {
+    grid-template-columns: 80px 1fr 1fr;
+  }
+  
+  .food-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .tab-button {
+    flex: 1 0 100%;
+  }
+  
+  .day-container {
+    grid-template-columns: 70px 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .meal-times-header {
+    grid-template-columns: 70px 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .days-grid {
+    grid-template-columns: 1fr;
+  }
+}
