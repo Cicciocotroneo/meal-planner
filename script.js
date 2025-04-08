@@ -330,7 +330,7 @@ function initializeFoodDatabase() {
       category
     };
     
-  // Aggiungi l'alimento ai cibi personalizzati
+    // Aggiungi l'alimento ai cibi personalizzati
     if (!customFoods[category]) {
       customFoods[category] = [];
     }
@@ -542,7 +542,7 @@ function setupFoodSelectionModal(mealPlan) {
   });
 }
 
-function openFoodSelectionModal(day, mealType) {
+function openFoodSelectionModal(day, mealType, defaultCategory = null) {
   const modal = document.getElementById('food-selector-modal');
   const modalTitle = document.getElementById('modal-title');
   const categoryTabs = document.getElementById('category-tabs');
@@ -554,16 +554,17 @@ function openFoodSelectionModal(day, mealType) {
   // Crea le tab per le categorie
   let tabsHtml = '';
   Object.keys(categoryNames).forEach(category => {
-    tabsHtml += `<button class="category-tab" data-category="${category}">${categoryNames[category]}</button>`;
+    tabsHtml += `<button class="category-tab${defaultCategory === category ? ' active' : ''}" data-category="${category}">${categoryNames[category]}</button>`;
   });
   categoryTabs.innerHTML = tabsHtml;
   
-  // Seleziona la prima categoria per default
-  const firstCategoryTab = categoryTabs.querySelector('.category-tab');
-  if (firstCategoryTab) {
-    firstCategoryTab.classList.add('active');
-    showFoodsInModal(firstCategoryTab.getAttribute('data-category'), day, mealType);
+  // Seleziona la categoria predefinita o la prima categoria
+  const categoryToShow = defaultCategory || categoryTabs.querySelector('.category-tab').getAttribute('data-category');
+  if (!defaultCategory) {
+    categoryTabs.querySelector('.category-tab').classList.add('active');
   }
+  
+  showFoodsInModal(categoryToShow, day, mealType);
   
   // Aggiungi eventi alle tab
   categoryTabs.querySelectorAll('.category-tab').forEach(tab => {
@@ -664,210 +665,14 @@ function addFoodToMealPlan(food, day, mealType) {
   
   // Aggiorna il riepilogo nutrizionale
   updateNutritionSummary();
+  
+  // Suggerisci il resto del piano pasti
+  suggestMealPlan(day, mealType);
 }
 
 // ============================
-// GESTIONE RIEPILOGO NUTRIZIONALE
+// SUGGERIMENTI PIANO PASTI
 // ============================
-function initializeNutritionSummary() {
-  // Aggiorna il riepilogo nutrizionale iniziale
-  updateNutritionSummary();
-}
-
-function updateNutritionSummary() {
-  const mealPlan = loadFromLocalStorage('mealPlan', {});
-  const profiles = loadFromLocalStorage('userProfiles', []);
-  const selectedProfileId = loadFromLocalStorage('selectedProfileId', null);
-  
-  // Ottiene il profilo selezionato
-  const selectedProfile = selectedProfileId ? profiles.find(p => p.id === selectedProfileId) : null;
-  
-  // Calcola i valori nutrizionali totali
-  const nutritionData = calculateNutritionData(mealPlan);
-  
-  // Aggiorna il riepilogo settimanale
-  updateWeeklyOverview(nutritionData, selectedProfile);
-  
-  // Aggiorna il dettaglio giornaliero
-  updateDailyBreakdown(nutritionData);
-}
-
-function calculateNutritionData(mealPlan) {
-  const daysOfWeek = Object.keys(mealPlan);
-  const dailyData = {};
-  let totalCalories = 0;
-  let totalProtein = 0;
-  let totalCarbs = 0;
-  let totalFat = 0;
-  
-  daysOfWeek.forEach(day => {
-    const dayData = {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      meals: {
-        lunch: { calories: 0, protein: 0, carbs: 0, fat: 0 },
-        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0 }
-      }
-    };
-    
-    // Calcola i valori per pranzo e cena
-    ['lunch', 'dinner'].forEach(mealType => {
-      mealPlan[day][mealType].forEach(meal => {
-        dayData.meals[mealType].calories += meal.calories;
-        dayData.meals[mealType].protein += meal.protein;
-        dayData.meals[mealType].carbs += meal.carbs;
-        dayData.meals[mealType].fat += meal.fat;
-      });
-      
-      // Aggiorna i totali giornalieri
-      dayData.calories += dayData.meals[mealType].calories;
-      dayData.protein += dayData.meals[mealType].protein;
-      dayData.carbs += dayData.meals[mealType].carbs;
-      dayData.fat += dayData.meals[mealType].fat;
-    });
-    
-    // Aggiorna i totali settimanali
-    totalCalories += dayData.calories;
-    totalProtein += dayData.protein;
-    totalCarbs += dayData.carbs;
-    totalFat += dayData.fat;
-    
-    // Salva i dati del giorno
-    dailyData[day] = dayData;
-  });
-  
-  return {
-    totalCalories,
-    totalProtein,
-    totalCarbs,
-    totalFat,
-    dailyData
-  };
-}
-
-function updateWeeklyOverview(nutritionData, selectedProfile) {
-  // Aggiorna le calorie totali
-  document.getElementById('total-calories').textContent = `${Math.round(nutritionData.totalCalories)} kcal`;
-  
-  // Aggiorna la media giornaliera
-  const daysCount = Object.keys(nutritionData.dailyData).length;
-  const dailyAverage = daysCount > 0 ? Math.round(nutritionData.totalCalories / daysCount) : 0;
-  document.getElementById('daily-average').textContent = `Media giornaliera: ${dailyAverage} kcal`;
-  
-  // Aggiorna il confronto con il fabbisogno se c'è un profilo selezionato
-  const targetComparison = document.getElementById('target-comparison');
-  if (selectedProfile) {
-    const caloriePercentage = Math.round((dailyAverage / selectedProfile.dailyCalories) * 100);
-    document.getElementById('percentage-fill').style.width = `${Math.min(caloriePercentage, 100)}%`;
-    document.getElementById('percentage-label').textContent = `${caloriePercentage}% del fabbisogno giornaliero`;
-    targetComparison.style.display = 'block';
-  } else {
-    targetComparison.style.display = 'none';
-  }
-  
-  // Aggiorna la distribuzione dei macronutrienti
-  document.getElementById('carbs-amount').textContent = `${Math.round(nutritionData.totalCarbs)}g`;
-  document.getElementById('protein-amount').textContent = `${Math.round(nutritionData.totalProtein)}g`;
-  document.getElementById('fat-amount').textContent = `${Math.round(nutritionData.totalFat)}g`;
-  
-  // Calcola le percentuali dei macronutrienti
-  const totalKcal = nutritionData.totalCalories;
-  const carbsPercentage = totalKcal > 0 ? Math.round((nutritionData.totalCarbs * 4 / totalKcal) * 100) : 0;
-  const proteinPercentage = totalKcal > 0 ? Math.round((nutritionData.totalProtein * 4 / totalKcal) * 100) : 0;
-  const fatPercentage = totalKcal > 0 ? Math.round((nutritionData.totalFat * 9 / totalKcal) * 100) : 0;
-  
-  document.getElementById('carbs-percentage').textContent = `${carbsPercentage}%`;
-  document.getElementById('protein-percentage').textContent = `${proteinPercentage}%`;
-  document.getElementById('fat-percentage').textContent = `${fatPercentage}%`;
-  
-  // Aggiorna il grafico a torta
-  updateMacrosChart(carbsPercentage, proteinPercentage, fatPercentage);
-}
-
-function updateMacrosChart(carbsPercentage, proteinPercentage, fatPercentage) {
-  const ctx = document.getElementById('macros-chart').getContext('2d');
-  
-  // Distrugge il grafico esistente se presente
-  if (window.macrosChart) {
-    window.macrosChart.destroy();
-  }
-  
-  // Crea un nuovo grafico
-  window.macrosChart = new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: ['Carboidrati', 'Proteine', 'Grassi'],
-      datasets: [{
-        data: [carbsPercentage, proteinPercentage, fatPercentage],
-        backgroundColor: [
-          'rgba(54, 162, 235, 0.6)', // Blu per carboidrati
-          'rgba(75, 192, 192, 0.6)', // Verde acqua per proteine
-          'rgba(255, 159, 64, 0.6)', // Arancione per grassi
-        ],
-        borderColor: [
-          'rgba(54, 162, 235, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'bottom'
-        }
-      }
-    }
-  });
-}
-
-function updateDailyBreakdown(nutritionData) {
-  const daysGrid = document.getElementById('days-grid');
-  const daysOfWeek = Object.keys(nutritionData.dailyData);
-  
-  let html = '';
-  
-  daysOfWeek.forEach(day => {
-    const dayData = nutritionData.dailyData[day];
-    
-    html += `
-      <div class="day-card">
-        <h4>${day}</h4>
-        <div class="day-total">
-          Totale: ${Math.round(dayData.calories)} kcal
-        </div>
-        <div class="day-macros">
-          <div class="macro-pill">C: ${Math.round(dayData.carbs)}g</div>
-          <div class="macro-pill">P: ${Math.round(dayData.protein)}g</div>
-          <div class="macro-pill">G: ${Math.round(dayData.fat)}g</div>
-        </div>
-        
-        <div class="meals-summary">
-          <div class="meal-row">
-            <div class="meal-type">Pranzo</div>
-            <div class="meal-calories">
-              ${Math.round(dayData.meals.lunch.calories)} kcal
-            </div>
-          </div>
-          <div class="meal-row">
-            <div class="meal-type">Cena</div>
-            <div class="meal-calories">
-              ${Math.round(dayData.meals.dinner.calories)} kcal
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  });
-  
-  daysGrid.innerHTML = html;
-}
-// Aggiungere questa funzione dopo la funzione addFoodToMealPlan
-
 function suggestMealPlan(updatedDay, updatedMealType) {
   // Ottiene il piano pasti corrente
   const mealPlan = loadFromLocalStorage('mealPlan');
@@ -1126,74 +931,203 @@ function displayWeeklySuggestions(suggestions) {
   suggestionBox.innerHTML = html;
 }
 
-// Modifica la funzione openFoodSelectionModal per accettare un parametro di categoria opzionale
-function openFoodSelectionModal(day, mealType, defaultCategory = null) {
-  const modal = document.getElementById('food-selector-modal');
-  const modalTitle = document.getElementById('modal-title');
-  const categoryTabs = document.getElementById('category-tabs');
-  const foodList = document.getElementById('modal-food-list');
-  
-  // Imposta il titolo del modale
-  modalTitle.textContent = `Seleziona Alimento per ${day} - ${mealType === 'lunch' ? 'Pranzo' : 'Cena'}`;
-  
-  // Crea le tab per le categorie
-  let tabsHtml = '';
-  Object.keys(categoryNames).forEach(category => {
-    tabsHtml += `<button class="category-tab${defaultCategory === category ? ' active' : ''}" data-category="${category}">${categoryNames[category]}</button>`;
-  });
-  categoryTabs.innerHTML = tabsHtml;
-  
-  // Seleziona la categoria predefinita o la prima categoria
-  const categoryToShow = defaultCategory || categoryTabs.querySelector('.category-tab').getAttribute('data-category');
-  if (!defaultCategory) {
-    categoryTabs.querySelector('.category-tab').classList.add('active');
-  }
-  
-  showFoodsInModal(categoryToShow, day, mealType);
-  
-  // Aggiungi eventi alle tab
-  categoryTabs.querySelectorAll('.category-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      // Rimuove active da tutte le tab
-      categoryTabs.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-      
-      // Aggiunge active alla tab cliccata
-      this.classList.add('active');
-      
-      // Mostra gli alimenti della categoria selezionata
-      const category = this.getAttribute('data-category');
-      showFoodsInModal(category, day, mealType);
-    });
-  });
-  
-  // Mostra il modale
-  modal.style.display = 'flex';
+// ============================
+// GESTIONE RIEPILOGO NUTRIZIONALE
+// ============================
+function initializeNutritionSummary() {
+  // Aggiorna il riepilogo nutrizionale iniziale
+  updateNutritionSummary();
 }
 
-// Modifica la funzione addFoodToMealPlan per includere il suggerimento
-function addFoodToMealPlan(food, day, mealType) {
-  // Ottiene il piano pasti corrente
-  const mealPlan = loadFromLocalStorage('mealPlan');
+function updateNutritionSummary() {
+  const mealPlan = loadFromLocalStorage('mealPlan', {});
+  const profiles = loadFromLocalStorage('userProfiles', []);
+  const selectedProfileId = loadFromLocalStorage('selectedProfileId', null);
   
-  // Aggiunge l'alimento
-  mealPlan[day][mealType].push({
-    id: food.id,
-    name: food.name,
-    calories: food.calories,
-    protein: food.protein,
-    carbs: food.carbs,
-    fat: food.fat,
-    portion: food.portion,
-    category: food.category
+  // Ottiene il profilo selezionato
+  const selectedProfile = selectedProfileId ? profiles.find(p => p.id === selectedProfileId) : null;
+  
+  // Calcola i valori nutrizionali totali
+  const nutritionData = calculateNutritionData(mealPlan);
+  
+  // Aggiorna il riepilogo settimanale
+  updateWeeklyOverview(nutritionData, selectedProfile);
+  
+  // Aggiorna il dettaglio giornaliero
+  updateDailyBreakdown(nutritionData);
+}
+
+function calculateNutritionData(mealPlan) {
+  const daysOfWeek = Object.keys(mealPlan);
+  const dailyData = {};
+  let totalCalories = 0;
+  let totalProtein = 0;
+  let totalCarbs = 0;
+  let totalFat = 0;
+  
+  daysOfWeek.forEach(day => {
+    const dayData = {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      meals: {
+        lunch: { calories: 0, protein: 0, carbs: 0, fat: 0 },
+        dinner: { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      }
+    };
+    
+    // Calcola i valori per pranzo e cena
+    ['lunch', 'dinner'].forEach(mealType => {
+      mealPlan[day][mealType].forEach(meal => {
+        dayData.meals[mealType].calories += meal.calories;
+        dayData.meals[mealType].protein += meal.protein;
+        dayData.meals[mealType].carbs += meal.carbs;
+        dayData.meals[mealType].fat += meal.fat;
+      });
+      
+      // Aggiorna i totali giornalieri
+      dayData.calories += dayData.meals[mealType].calories;
+      dayData.protein += dayData.meals[mealType].protein;
+      dayData.carbs += dayData.meals[mealType].carbs;
+      dayData.fat += dayData.meals[mealType].fat;
+    });
+    
+    // Aggiorna i totali settimanali
+    totalCalories += dayData.calories;
+    totalProtein += dayData.protein;
+    totalCarbs += dayData.carbs;
+    totalFat += dayData.fat;
+    
+    // Salva i dati del giorno
+    dailyData[day] = dayData;
   });
   
-  // Salva e aggiorna
-  saveToLocalStorage('mealPlan', mealPlan);
-  renderMealPlan(mealPlan, Object.keys(weeklyPlanTemplate));
+  return {
+    totalCalories,
+    totalProtein,
+    totalCarbs,
+    totalFat,
+    dailyData
+  };
+}
+
+function updateWeeklyOverview(nutritionData, selectedProfile) {
+  // Aggiorna le calorie totali
+  document.getElementById('total-calories').textContent = `${Math.round(nutritionData.totalCalories)} kcal`;
   
-  // Aggiorna il riepilogo nutrizionale
-  updateNutritionSummary();
+  // Aggiorna la media giornaliera
+  const daysCount = Object.keys(nutritionData.dailyData).length;
+  const dailyAverage = daysCount > 0 ? Math.round(nutritionData.totalCalories / daysCount) : 0;
+  document.getElementById('daily-average').textContent = `Media giornaliera: ${dailyAverage} kcal`;
   
-  // Suggerisci il resto del piano pasti
-  suggestMealPlan(day, mealType);
+  // Aggiorna il confronto con il fabbisogno se c'è un profilo selezionato
+  const targetComparison = document.getElementById('target-comparison');
+  if (selectedProfile) {
+    const caloriePercentage = Math.round((dailyAverage / selectedProfile.dailyCalories) * 100);
+    document.getElementById('percentage-fill').style.width = `${Math.min(caloriePercentage, 100)}%`;
+    document.getElementById('percentage-label').textContent = `${caloriePercentage}% del fabbisogno giornaliero`;
+    targetComparison.style.display = 'block';
+  } else {
+    targetComparison.style.display = 'none';
+  }
+  
+  // Aggiorna la distribuzione dei macronutrienti
+  document.getElementById('carbs-amount').textContent = `${Math.round(nutritionData.totalCarbs)}g`;
+  document.getElementById('protein-amount').textContent = `${Math.round(nutritionData.totalProtein)}g`;
+  document.getElementById('fat-amount').textContent = `${Math.round(nutritionData.totalFat)}g`;
+  
+  // Calcola le percentuali dei macronutrienti
+  const totalKcal = nutritionData.totalCalories;
+  const carbsPercentage = totalKcal > 0 ? Math.round((nutritionData.totalCarbs * 4 / totalKcal) * 100) : 0;
+  const proteinPercentage = totalKcal > 0 ? Math.round((nutritionData.totalProtein * 4 / totalKcal) * 100) : 0;
+  const fatPercentage = totalKcal > 0 ? Math.round((nutritionData.totalFat * 9 / totalKcal) * 100) : 0;
+  
+  document.getElementById('carbs-percentage').textContent = `${carbsPercentage}%`;
+  document.getElementById('protein-percentage').textContent = `${proteinPercentage}%`;
+  document.getElementById('fat-percentage').textContent = `${fatPercentage}%`;
+  
+  // Aggiorna il grafico a torta
+  updateMacrosChart(carbsPercentage, proteinPercentage, fatPercentage);
+}
+
+function updateMacrosChart(carbsPercentage, proteinPercentage, fatPercentage) {
+  const ctx = document.getElementById('macros-chart').getContext('2d');
+  
+  // Distrugge il grafico esistente se presente
+  if (window.macrosChart) {
+    window.macrosChart.destroy();
+  }
+  
+  // Crea un nuovo grafico
+  window.macrosChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Carboidrati', 'Proteine', 'Grassi'],
+      datasets: [{
+        data: [carbsPercentage, proteinPercentage, fatPercentage],
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.6)', // Blu per carboidrati
+          'rgba(75, 192, 192, 0.6)', // Verde acqua per proteine
+          'rgba(255, 159, 64, 0.6)', // Arancione per grassi
+        ],
+        borderColor: [
+          'rgba(54, 162, 235, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 159, 64, 1)',
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+}
+
+function updateDailyBreakdown(nutritionData) {
+  const daysGrid = document.getElementById('days-grid');
+  const daysOfWeek = Object.keys(nutritionData.dailyData);
+  
+  let html = '';
+  
+  daysOfWeek.forEach(day => {
+    const dayData = nutritionData.dailyData[day];
+    
+    html += `
+      <div class="day-card">
+        <h4>${day}</h4>
+        <div class="day-total">
+          Totale: ${Math.round(dayData.calories)} kcal
+        </div>
+        <div class="day-macros">
+          <div class="macro-pill">C: ${Math.round(dayData.carbs)}g</div>
+          <div class="macro-pill">P: ${Math.round(dayData.protein)}g</div>
+          <div class="macro-pill">G: ${Math.round(dayData.fat)}g</div>
+        </div>
+        
+        <div class="meals-summary">
+          <div class="meal-row">
+            <div class="meal-type">Pranzo</div>
+            <div class="meal-calories">
+              ${Math.round(dayData.meals.lunch.calories)} kcal
+            </div>
+          </div>
+          <div class="meal-row">
+            <div class="meal-type">Cena</div>
+            <div class="meal-calories">
+              ${Math.round(dayData.meals.dinner.calories)} kcal
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  
+  daysGrid.innerHTML = html;
 }
