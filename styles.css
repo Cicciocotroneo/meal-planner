@@ -680,7 +680,7 @@ button:hover {
   font-weight: 600;
   color: #555;
 }
-/* Stili per la sezione di esportazione/importazione */
+/* Sostituisci i precedenti stili per la sezione di esportazione/importazione con questi */
 .export-import-section {
   margin-top: 2rem;
   padding: 1.5rem;
@@ -692,21 +692,27 @@ button:hover {
 .button-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-top: 1rem;
+  width: 100%;
 }
 
 .secondary-button {
   background-color: #2196f3;
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.75rem 0.5rem;
+  font-size: 0.95rem;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
   display: inline-block;
   text-align: center;
+  flex: 1;
+  min-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .secondary-button:hover {
@@ -715,30 +721,46 @@ button:hover {
 
 .save-diet-form {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1rem;
+  width: 100%;
 }
 
 .save-diet-form input {
-  flex: 1;
+  flex: 2;
+  min-width: 200px;
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+}
+
+.save-diet-form button {
+  flex: 1;
+  min-width: 120px;
 }
 
 .saved-diets-section {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1rem;
+  width: 100%;
 }
 
 .saved-diets-section select {
-  flex: 1;
+  flex: 2;
+  min-width: 200px;
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+}
+
+.saved-diets-section button {
+  flex: 1;
+  min-width: 100px;
 }
 /* Stili responsive */
 @media (max-width: 768px) {
