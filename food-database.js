@@ -430,7 +430,7 @@ const foodDatabase = {
       portion: '10g',
       category: 'grassiSani'
     }
-  ]
+  ], 
 
 // Aggiungi prima della chiusura dell'oggetto foodDatabase
 colazione: [
