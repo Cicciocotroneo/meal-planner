@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pianificazione Settimanale Alimentare</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <h1>Pianificazione Settimanale Alimentare</h1>
+        </header>
+
+        <nav class="app-tabs">
+            <button class="tab-button active" data-tab="profile">Profilo</button>
+            <button class="tab-button" data-tab="foods">Alimenti</button>
+            <button class="tab-button" data-tab="planner">Piano Settimanale</button>
+            <button class="tab-button" data-tab="summary">Riepilogo Nutrizionale</button>
+        </nav>
+
+        <main class="app-content">
+            <!-- Sezione Profilo -->
+            <section id="profile-section" class="tab-section active">
+                <h2>Gestione Profili</h2>
+                <div id="profile-container">
+                    <div id="profile-selector"></div>
+                    <div id="profile-form">
+                        <h3>Crea Nuovo Profilo</h3>
+                        <div class="form-group">
+                            <label for="profile-name">Nome del profilo:</label>
+                            <input type="text" id="profile-name" placeholder="Es. Mario Rossi">
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Genere:</label>
+                            <select id="gender">
+                                <option value="male">Uomo</option>
+                                <option value="female">Donna</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Età:</label>
+                            <input type="number" id="age" min="15" max="100" value="30">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">Peso (kg):</label>
+                            <input type="number" id="weight" min="40" max="200" value="70">
+                        </div>
+                        <div class="form-group">
+                            <label for="height">Altezza (cm):</label>
+                            <input type="number" id="height" min="140" max="220" value="170">
+                        </div>
+                        <div class="form-group">
+                            <label for="activity-level">Livello di Attività Fisica:</label>
+                            <select id="activity-level">
+                                <option value="sedentary">Sedentario</option>
+                                <option value="lightlyActive">Leggermente attivo (1-3 giorni/settimana)</option>
+                                <option value="moderatelyActive" selected>Moderatamente attivo (3-5 giorni/settimana)</option>
+                                <option value="veryActive">Molto attivo (6-7 giorni/settimana)</option>
+                                <option value="extraActive">Estremamente attivo (atleti)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="goal">Obiettivo:</label>
+                            <select id="goal">
+                                <option value="maintenance" selected>Mantenimento peso</option>
+                                <option value="mildWeightLoss">Dimagrimento leggero</option>
+                                <option value="moderateWeightLoss">Dimagrimento moderato</option>
+                                <option value="mildWeightGain">Aumento di peso</option>
+                            </select>
+                        </div>
+                        <button id="calculate-button">Calcola e Salva Profilo</button>
+                    </div>
+                    <div id="profile-details"></div>
+                </div>
+            </section>
+
+            <!-- Sezione Alimenti -->
+            <section id="foods-section" class="tab-section">
+                <h2>Database Alimenti</h2>
+                <div class="category-selector">
+                    <label for="food-category">Categoria:</label>
+                    <select id="food-category"></select>
+                </div>
+                <div class="food-items-list">
+                    <h3 id="category-title">Alimenti</h3>
+                    <div id="food-table-container"></div>
+                </div>
+                <div class="add-food-form">
+                    <h3>Aggiungi Nuovo Alimento</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="food-name">Nome:</label>
+                            <input type="text" id="food-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-calories">Calorie (per porzione):</label>
+                            <input type="number" id="food-calories" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-protein">Proteine (g):</label>
+                            <input type="number" id="food-protein" min="0" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-carbs">Carboidrati (g):</label>
+                            <input type="number" id="food-carbs" min="0" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-fat">Grassi (g):</label>
+                            <input type="number" id="food-fat" min="0" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-portion">Porzione (es. "100g"):</label>
+                            <input type="text" id="food-portion" required>
+                        </div>
+                    </div>
+                    <button id="add-food-button">Aggiungi Alimento</button>
+                </div>
+            </section>
+
+            <!-- Sezione Piano Settimanale -->
+            <section id="planner-section" class="tab-section">
+                <h2>Pianificazione Settimanale</h2>
+                <div class="meal-plan-container">
+                    <div class="meal-times-header">
+                        <div class="day-title-placeholder"></div>
+                        <div class="meal-time-title">Pranzo</div>
+                        <div class="meal-time-title">Cena</div>
+                    </div>
+                    <div id="meal-plan-grid"></div>
+                </div>
+                <div id="food-selector-modal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="modal-title">Seleziona Alimento</h3>
+                            <button class="close-modal-button">&times;</button>
+                        </div>
+                        <div class="category-tabs" id="category-tabs"></div>
+                        <div class="food-list" id="modal-food-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sezione Riepilogo Nutrizionale -->
+            <section id="summary-section" class="tab-section">
+                <h2>Riepilogo Nutrizionale</h2>
+                <div class="summary-content">
+                    <div class="weekly-overview">
+                        <h3>Panoramica Settimanale</h3>
+                        <div class="nutrition-card total-calories">
+                            <h4>Calorie Totali</h4>
+                            <div id="total-calories" class="value">0 kcal</div>
+                            <div id="daily-average" class="daily-average">Media giornaliera: 0 kcal</div>
+                            <div id="target-comparison" class="target-comparison" style="display: none;">
+                                <div class="percentage-bar">
+                                    <div id="percentage-fill" class="percentage-fill" style="width: 0%"></div>
+                                </div>
+                                <div id="percentage-label" class="percentage-label">0% del fabbisogno giornaliero</div>
+                            </div>
+                        </div>
+                        <div class="macros-distribution">
+                            <h4>Distribuzione Macronutrienti</h4>
+                            <canvas id="macros-chart" width="250" height="250"></canvas>
+                            <div class="macros-table">
+                                <div class="macro-row">
+                                    <div class="macro-name">Carboidrati</div>
+                                    <div id="carbs-amount" class="macro-amount">0g</div>
+                                    <div id="carbs-percentage" class="macro-percentage">0%</div>
+                                </div>
+                                <div class="macro-row">
+                                    <div class="macro-name">Proteine</div>
+                                    <div id="protein-amount" class="macro-amount">0g</div>
+                                    <div id="protein-percentage" class="macro-percentage">0%</div>
+                                </div>
+                                <div class="macro-row">
+                                    <div class="macro-name">Grassi</div>
+                                    <div id="fat-amount" class="macro-amount">0g</div>
+                                    <div id="fat-percentage" class="macro-percentage">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="daily-breakdown">
+                        <h3>Dettaglio Giornaliero</h3>
+                        <div id="days-grid" class="days-grid"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>© 2023 Pianificazione Settimanale Alimentare</p>
+        </footer>
+    </div>
+
+    <!-- Inclusione delle librerie esterne via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    
+    <!-- Database alimentare e script principale -->
+    <script src="food-database.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
