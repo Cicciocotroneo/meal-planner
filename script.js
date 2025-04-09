@@ -404,6 +404,43 @@ function showFoodsForCategory(category, customFoods) {
   });
 }
 
+function deleteFood(foodId, category, isCustom, customFoods) {
+  // Verifica se è un alimento personalizzato o predefinito
+  if (isCustom) {
+    // Per gli alimenti personalizzati, chiedi conferma
+    if (confirm('Sei sicuro di voler eliminare questo alimento personalizzato?')) {
+      // Rimuovi l'alimento dal database personalizzato
+      if (customFoods[category]) {
+        customFoods[category] = customFoods[category].filter(food => food.id !== foodId);
+        saveToLocalStorage('customFoods', customFoods);
+        
+        // Aggiorna la visualizzazione
+        showFoodsForCategory(category, customFoods);
+      }
+    }
+  } else {
+    // Per gli alimenti predefiniti, avvisa che saranno nascosti ma non eliminati completamente
+    if (confirm('Gli alimenti predefiniti non possono essere eliminati definitivamente, ma saranno nascosti dalla visualizzazione. Vuoi procedere?')) {
+      // Ottieni la lista degli alimenti nascosti
+      let hiddenFoods = loadFromLocalStorage('hiddenFoods', {});
+      
+      // Aggiungi l'alimento alla lista degli alimenti nascosti
+      if (!hiddenFoods[category]) {
+        hiddenFoods[category] = [];
+      }
+      
+      // Verifica che l'alimento non sia già nascosto
+      if (!hiddenFoods[category].includes(foodId)) {
+        hiddenFoods[category].push(foodId);
+        saveToLocalStorage('hiddenFoods', hiddenFoods);
+      }
+      
+      // Aggiorna la visualizzazione
+      showFoodsForCategory(category, customFoods);
+    }
+  }
+}
+
 // ============================
 // GESTIONE PIANO PASTI
 // ============================
