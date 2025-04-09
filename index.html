@@ -76,60 +76,56 @@
             </section>
 
             <!-- Sezione Alimenti -->
-<section id="foods-section" class="tab-section">
-  <h2>Database Alimenti</h2>
-  <div class="food-database">
-    <div class="category-selector">
-      <label for="food-category">Categoria:</label>
-      <select id="food-category"></select>
-    </div>
-    
-    <div class="food-items-list">
-      <h3 id="category-title">Alimenti</h3>
-      <div id="food-table-container"></div>
-    </div>
-    
-    <div class="export-import-section">
-      <h3>Esporta/Importa Database Alimenti</h3>
-      <div class="button-group">
-        <button id="export-foods-button" class="secondary-button">Esporta Database</button>
-        <label for="import-foods-input" class="secondary-button">Importa Database</label>
-        <input type="file" id="import-foods-input" accept=".json" style="display: none;">
-      </div>
-    </div>
-    
-    <div class="add-food-form">
-      <h3>Aggiungi Nuovo Alimento</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="food-name">Nome:</label>
-          <input type="text" id="food-name" required>
-        </div>
-        <div class="form-group">
-          <label for="food-calories">Calorie:</label>
-          <input type="number" id="food-calories" min="0" required>
-        </div>
-        <div class="form-group">
-          <label for="food-protein">Proteine (g):</label>
-          <input type="number" id="food-protein" min="0" step="0.1" required>
-        </div>
-        <div class="form-group">
-          <label for="food-carbs">Carboidrati (g):</label>
-          <input type="number" id="food-carbs" min="0" step="0.1" required>
-        </div>
-        <div class="form-group">
-          <label for="food-fat">Grassi (g):</label>
-          <input type="number" id="food-fat" min="0" step="0.1" required>
-        </div>
-        <div class="form-group">
-          <label for="food-portion">Porzione:</label>
-          <input type="text" id="food-portion" required>
-        </div>
-      </div>
-      <button id="add-food-button" class="add-food-button">Aggiungi Alimento</button>
-    </div>
+            <section id="foods-section" class="tab-section">
+                <h2>Database Alimenti</h2>
+                <div class="category-selector">
+                    <label for="food-category">Categoria:</label>
+                    <select id="food-category"></select>
+                </div>
+                <div class="food-items-list">
+                    <h3 id="category-title">Alimenti</h3>
+                    <div id="food-table-container"></div>
+                </div>
+<div class="export-import-section">
+  <h3>Esporta/Importa Database Alimenti</h3>
+  <div class="button-group">
+    <button id="export-foods-button" class="secondary-button">Esporta Database</button>
+    <label for="import-foods-input" class="secondary-button">Importa Database</label>
+    <input type="file" id="import-foods-input" accept=".json" style="display: none;">
   </div>
-</section>
+</div>
+                
+                <div class="add-food-form">
+                    <h3>Aggiungi Nuovo Alimento</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="food-name">Nome:</label>
+                            <input type="text" id="food-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-calories">Calorie (per porzione):</label>
+                            <input type="number" id="food-calories" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-protein">Proteine (g):</label>
+                            <input type="number" id="food-protein" min="0" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-carbs">Carboidrati (g):</label>
+                            <input type="number" id="food-carbs" min="0" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-fat">Grassi (g):</label>
+                            <input type="number" id="food-fat" min="0" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-portion">Porzione (es. "100g"):</label>
+                            <input type="text" id="food-portion" required>
+                        </div>
+                    </div>
+                    <button id="add-food-button">Aggiungi Alimento</button>
+                </div>
+            </section>
 
             <!-- Sezione Piano Settimanale -->
             <section id="planner-section" class="tab-section">
