@@ -354,49 +354,40 @@ function initializeFoodDatabase() {
 function showFoodsForCategory(category, customFoods) {
   const foodTableContainer = document.getElementById('food-table-container');
   const categoryTitle = document.getElementById('category-title');
-  
+
   // Imposta il titolo della categoria
   categoryTitle.textContent = `Alimenti in ${categoryNames[category]}`;
-  
+
   // Ottiene gli alimenti predefiniti e personalizzati
   const defaultFoods = foodDatabase[category] || [];
   const userFoods = customFoods[category] || [];
   const allFoods = [...defaultFoods, ...userFoods];
-  
+
   if (allFoods.length === 0) {
     foodTableContainer.innerHTML = '<p>Nessun alimento disponibile in questa categoria.</p>';
     return;
   }
-  
-  // Crea la tabella
-  let html = '<table class="food-table">';
-  html += `
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Calorie</th>
-        <th>Proteine (g)</th>
-        <th>Carboidrati (g)</th>
-        <th>Grassi (g)</th>
-        <th>Porzione</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-  
+
+  // Crea la griglia di card
+  let html = '<div class="food-items-grid">';
+
   allFoods.forEach(food => {
     const isCustom = food.id.startsWith('custom');
-    html += `<tr class="${isCustom ? 'custom-food' : ''}">`;
-    html += `<td>${food.name}</td>`;
-    html += `<td>${food.calories}</td>`;
-    html += `<td>${food.protein}</td>`;
-    html += `<td>${food.carbs}</td>`;
-    html += `<td>${food.fat}</td>`;
-    html += `<td>${food.portion}</td>`;
-    html += '</tr>';
+    html += `
+      <div class="food-card ${isCustom ? 'custom-food' : ''}">
+        <div class="food-card-name">${food.name}</div>
+        <div class="food-card-details">
+          <div class="food-card-detail">Calorie: <span>${food.calories}</span></div>
+          <div class="food-card-detail">Proteine: <span>${food.protein}g</span></div>
+          <div class="food-card-detail">Carboidrati: <span>${food.carbs}g</span></div>
+          <div class="food-card-detail">Grassi: <span>${food.fat}g</span></div>
+        </div>
+        <div class="food-card-portion">Porzione: ${food.portion}</div>
+      </div>
+    `;
   });
-  
-  html += '</tbody></table>';
+
+  html += '</div>';
   foodTableContainer.innerHTML = html;
 }
 
