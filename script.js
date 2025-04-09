@@ -282,8 +282,9 @@ function showProfileDetails(profile) {
 // GESTIONE DATABASE ALIMENTI
 // ============================
 function initializeFoodDatabase() {
-  // Carica gli alimenti personalizzati
+  // Carica gli alimenti personalizzati e quelli nascosti
   const customFoods = loadFromLocalStorage('customFoods', {});
+  const hiddenFoods = loadFromLocalStorage('hiddenFoods', {});
   
   // Popola il selettore di categorie
   const categorySelect = document.getElementById('food-category');
@@ -295,12 +296,13 @@ function initializeFoodDatabase() {
   
   categorySelect.innerHTML = options;
   
-  // Mostra gli alimenti della categoria selezionata
-  showFoodsForCategory(categorySelect.value, customFoods);
+  // Mostra gli alimenti della categoria selezionata, filtrando quelli nascosti
+  const selectedCategory = categorySelect.value;
+  showFoodsForCategory(selectedCategory, customFoods, hiddenFoods);
   
   // Evento cambio categoria
   categorySelect.addEventListener('change', function() {
-    showFoodsForCategory(this.value, customFoods);
+    showFoodsForCategory(this.value, customFoods, hiddenFoods);
   });
   
   // Evento aggiunta nuovo alimento
@@ -339,7 +341,7 @@ function initializeFoodDatabase() {
     saveToLocalStorage('customFoods', customFoods);
     
     // Aggiorna la visualizzazione
-    showFoodsForCategory(category, customFoods);
+    showFoodsForCategory(category, customFoods, hiddenFoods);
     
     // Resetta il form
     document.getElementById('food-name').value = '';
@@ -349,14 +351,46 @@ function initializeFoodDatabase() {
     document.getElementById('food-fat').value = '0';
     document.getElementById('food-portion').value = '';
   });
+  
+  // Aggiungi il pulsante per ripristinare gli alimenti nascosti
+  const exportImportSection = document.querySelector('.export-import-section .button-group');
+  const restoreButton = document.createElement('button');
+  restoreButton.id = 'restore-hidden-foods';
+  restoreButton.className = 'secondary-button';
+  restoreButton.textContent = 'Ripristina Alimenti Nascosti';
+  restoreButton.addEventListener('click', function() {
+    if (confirm('Vuoi ripristinare tutti gli alimenti nascosti?')) {
+      saveToLocalStorage('hiddenFoods', {});
+      showFoodsForCategory(categorySelect.value, customFoods, {});
+    }
+  });
+  exportImportSection.appendChild(restoreButton);
 }
 
-function showFoodsForCategory(category, customFoods) {
+// Modifica la firma della funzione per accettare hiddenFoods con valore di default
+function showFoodsForCategory(category, customFoods, hiddenFoods = loadFromLocalStorage('hiddenFoods', {})) {
   const foodTableContainer = document.getElementById('food-table-container');
   const categoryTitle = document.getElementById('category-title');
 
   // Imposta il titolo della categoria
   categoryTitle.textContent = `Alimenti in ${categoryNames[category]}`;
+
+// Ottiene gli alimenti predefiniti e personalizzati
+  let defaultFoods = foodDatabase[category] || [];
+  const userFoods = customFoods[category] || [];
+  
+  // AGGIUNGI QUESTO BLOCCO: Filtra gli alimenti nascosti
+  if (hiddenFoods[category] && hiddenFoods[category].length > 0) {
+    defaultFoods = defaultFoods.filter(food => !hiddenFoods[category].includes(food.id));
+  }
+  
+  const allFoods = [...defaultFoods, ...userFoods];
+
+  // Il resto della funzione rimane invariato...
+  if (allFoods.length === 0) {
+    foodTableContainer.innerHTML = '<p>Nessun alimento disponibile in questa categoria.</p>';
+    return;
+  }
 
   // Ottiene gli alimenti predefiniti e personalizzati
   const defaultFoods = foodDatabase[category] || [];
