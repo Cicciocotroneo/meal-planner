@@ -387,6 +387,7 @@ function initializeFoodDatabase() {
     document.getElementById('food-portion').value = '';
   });
 }
+
 function showFoodsForCategory(category, customFoods) {
   const foodTableContainer = document.getElementById('food-table-container');
   const categoryTitle = document.getElementById('category-title');
@@ -455,7 +456,7 @@ function showFoodsForCategory(category, customFoods) {
   });
 }
 
-// Aggiungi questa nuova funzione per eliminare gli alimenti
+// Funzione per eliminare gli alimenti
 function deleteFoodItem(category, foodId, customFoods) {
   if (confirm('Sei sicuro di voler eliminare questo alimento?')) {
     // Per gli alimenti predefiniti, creiamo una lista di "nascosti"
@@ -484,6 +485,10 @@ function deleteFoodItem(category, foodId, customFoods) {
     showFoodsForCategory(category, customFoods);
   }
 }
+
+
+
+
 // ============================
 // GESTIONE PIANO PASTI
 // ============================
