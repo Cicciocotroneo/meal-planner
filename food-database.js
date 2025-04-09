@@ -5,16 +5,25 @@ const foodDatabase = {
     { 
       id: 'c1', 
       name: 'Pasta integrale al pomodoro fresco e basilico',
-      calories: 351,
+      calories: 320,
       protein: 12,
-      carbs: 57,
-      fat: 9,
-      portion: '100g pasta cruda',
+      carbs: 62,
+      fat: 6,
+      portion: '80g pasta cruda',
       category: 'cerealIntegrali'
     },
-
     { 
       id: 'c2', 
+      name: 'Riso integrale con zucchine e curcuma',
+      calories: 300,
+      protein: 8,
+      carbs: 60,
+      fat: 5,
+      portion: '70g riso crudo',
+      category: 'cerealIntegrali'
+    },
+    { 
+      id: 'c3', 
       name: 'Farro con verdure di stagione e erbe aromatiche',
       calories: 310,
       protein: 10,
@@ -23,7 +32,26 @@ const foodDatabase = {
       portion: '70g farro crudo',
       category: 'cerealIntegrali'
     },
-    
+    { 
+      id: 'c4', 
+      name: 'Orzo con piselli e carote',
+      calories: 290,
+      protein: 9,
+      carbs: 56,
+      fat: 5,
+      portion: '70g orzo crudo',
+      category: 'cerealIntegrali'
+    },
+    { 
+      id: 'c5', 
+      name: 'Gnocchi di patate con salsa di pomodoro leggera',
+      calories: 280,
+      protein: 6,
+      carbs: 55,
+      fat: 4,
+      portion: '150g gnocchi',
+      category: 'cerealIntegrali'
+    }
   ],
 
   // Carne bianca
@@ -37,7 +65,7 @@ const foodDatabase = {
       fat: 4,
       portion: '120g',
       category: 'carneBianca'
-    }
+    },
     { 
       id: 'cb2', 
       name: 'Tacchino al forno con erbe aromatiche',
@@ -57,6 +85,26 @@ const foodDatabase = {
       fat: 6,
       portion: '120g',
       category: 'carneBianca'
+    },
+    { 
+      id: 'cb4', 
+      name: 'Straccetti di tacchino con rucola e pomodorini',
+      calories: 180,
+      protein: 32,
+      carbs: 3,
+      fat: 5,
+      portion: '120g',
+      category: 'carneBianca'
+    },
+    { 
+      id: 'cb5', 
+      name: 'Coniglio in umido con erbe aromatiche',
+      calories: 200,
+      protein: 33,
+      carbs: 2,
+      fat: 7,
+      portion: '120g',
+      category: 'carneBianca'
     }
   ],
 
@@ -65,8 +113,8 @@ const foodDatabase = {
     { 
       id: 'p1', 
       name: 'Filetto di branzino al forno con pomodorini',
-      calories: 130,
-      protein: 25,
+      calories: 160,
+      protein: 30,
       carbs: 2,
       fat: 4,
       portion: '150g',
@@ -101,19 +149,29 @@ const foodDatabase = {
       fat: 14,
       portion: '150g',
       category: 'pesce'
+    },
+    { 
+      id: 'p5', 
+      name: 'Trota al forno con mandorle',
+      calories: 200,
+      protein: 28,
+      carbs: 2,
+      fat: 10,
+      portion: '150g',
+      category: 'pesce'
     }
   ],
 
   // Legumi
   legumi: [
-   { 
+    { 
       id: 'l1', 
-      name: 'Purea di fagioli con spinagi',
-      calories: 201,
-      protein: 5,
-      carbs: 12,
-      fat: 16,
-      portion: '75g di fagioli',
+      name: 'Zuppa di lenticchie con carote e sedano',
+      calories: 230,
+      protein: 15,
+      carbs: 40,
+      fat: 2,
+      portion: '70g lenticchie crude',
       category: 'legumi'
     },
     { 
@@ -182,12 +240,32 @@ const foodDatabase = {
     },
     { 
       id: 'u3', 
+      name: 'Omelette con funghi e erbe aromatiche',
+      calories: 200,
+      protein: 15,
+      carbs: 4,
+      fat: 14,
+      portion: '2 uova + funghi',
+      category: 'uova'
+    },
+    { 
+      id: 'u4', 
       name: 'Uova sode in insalata con verdure miste',
       calories: 190,
       protein: 15,
       carbs: 6,
       fat: 12,
       portion: '2 uova + verdure',
+      category: 'uova'
+    },
+    { 
+      id: 'u5', 
+      name: 'Frittata con asparagi',
+      calories: 210,
+      protein: 16,
+      carbs: 5,
+      fat: 14,
+      portion: '2 uova + asparagi',
       category: 'uova'
     }
   ],
@@ -214,15 +292,34 @@ const foodDatabase = {
       portion: '100g ricotta + verdure',
       category: 'formaggi'
     },
-   
     { 
       id: 'f3', 
+      name: 'Primo sale con insalata mista e noci',
+      calories: 230,
+      protein: 16,
+      carbs: 3,
+      fat: 18,
+      portion: '70g primo sale + insalata',
+      category: 'formaggi'
+    },
+    { 
+      id: 'f4', 
       name: 'Fiocchi di latte con pomodorini e basilico',
       calories: 160,
       protein: 18,
       carbs: 4,
       fat: 8,
       portion: '100g fiocchi di latte + pomodorini',
+      category: 'formaggi'
+    },
+    { 
+      id: 'f5', 
+      name: 'Caprino fresco con verdure crude',
+      calories: 190,
+      protein: 13,
+      carbs: 2,
+      fat: 14,
+      portion: '80g caprino + verdure',
       category: 'formaggi'
     }
   ],
