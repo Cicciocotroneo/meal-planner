@@ -374,8 +374,9 @@ function showFoodsForCategory(category, customFoods) {
   allFoods.forEach(food => {
     const isCustom = food.id.startsWith('custom');
     html += `
-      <div class="food-card ${isCustom ? 'custom-food' : ''}">
+      <div class="food-card ${isCustom ? 'custom-food' : ''}" data-food-id="${food.id}">
         <div class="food-card-name">${food.name}</div>
+        <button class="food-delete-button" data-food-id="${food.id}" data-category="${category}" data-custom="${isCustom}">×</button>
         <div class="food-card-details">
           <div class="food-card-detail">Calorie: <span>${food.calories}</span></div>
           <div class="food-card-detail">Proteine: <span>${food.protein}g</span></div>
@@ -389,6 +390,18 @@ function showFoodsForCategory(category, customFoods) {
 
   html += '</div>';
   foodTableContainer.innerHTML = html;
+
+  // Aggiungi event listener ai pulsanti di eliminazione
+  document.querySelectorAll('.food-delete-button').forEach(button => {
+    button.addEventListener('click', function(event) {
+      event.stopPropagation(); // Evita la propagazione dell'evento
+      const foodId = this.getAttribute('data-food-id');
+      const category = this.getAttribute('data-category');
+      const isCustom = this.getAttribute('data-custom') === 'true';
+      
+      deleteFood(foodId, category, isCustom, customFoods);
+    });
+  });
 }
 
 // ============================
