@@ -1210,3 +1210,46 @@ button:hover {
     width: 100%;
   }
 }
+
+/* Pulsante per cancellare gli alimenti */
+.food-card {
+  position: relative; /* Per posizionare correttamente il pulsante di eliminazione */
+}
+
+.food-delete-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.food-delete-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Solo per gli alimenti personalizzati, il bottone è sempre visibile */
+.custom-food .food-delete-button {
+  opacity: 0.8;
+}
+
+/* Per gli alimenti predefiniti, il bottone è nascosto e appare solo al passaggio del mouse */
+.food-card:not(.custom-food) .food-delete-button {
+  opacity: 0;
+}
+
+.food-card:not(.custom-food):hover .food-delete-button {
+  opacity: 0.7;
+}
