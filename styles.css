@@ -245,49 +245,168 @@ button:hover {
   margin-bottom: 2rem;
 }
 
-.food-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 2rem;
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
-.food-table th {
-  background-color: #f1f1f1;
-  padding: 0.75rem;
-  text-align: left;
-  border-bottom: 2px solid #ddd;
-}
-
-.food-table td {
-  padding: 0.75rem;
-  border-bottom: 1px solid #eee;
-}
-
-.food-table tr:hover {
-  background-color: #f9f9f9;
-}
-
-.custom-food {
-  background-color: #e8f5e9;
-}
-
-.add-food-form {
-  background-color: #f8f9fa;
-  padding: 1.5rem;
+.food-card {
+  position: relative;
+  background-color: white;
   border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #4caf50;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.food-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.food-card.custom-food {
+  border-left-color: #ff9800;
+}
+
+.food-card-header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-right: 20px;
+}
+
+.food-card-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.food-card-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.food-card-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.food-card-label {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.food-card-value {
+  font-weight: 500;
+}
+
+.food-card-portion {
+  grid-column: 1 / span 2;
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #666;
+}
+
+.food-delete-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.food-delete-button:hover {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Miglioramento form aggiungi alimento */
+.add-food-form {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 2rem;
+}
+
+.add-food-form h3 {
+  margin-top: 0;
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  color: #4caf50;
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
-  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
 }
 
 #add-food-button {
-  display: block;
-  margin: 0 auto;
+  min-width: 200px;
+}
+
+/* Responsive per la griglia alimenti */
+@media (max-width: 768px) {
+  .food-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-selector {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .category-selector label {
+    margin-bottom: 0.5rem;
+  }
 }
 
 /* Stili per Piano Settimanale */
