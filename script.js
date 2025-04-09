@@ -10,23 +10,33 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeNutritionSummary();
 });
 
-// Configurazione delle tab dell'applicazione
 function setupTabs() {
   const tabButtons = document.querySelectorAll('.tab-button');
-  const tabSections = document.querySelectorAll('.tab-section');
   
   tabButtons.forEach(button => {
     button.addEventListener('click', function() {
-      // Rimuove la classe active da tutti i pulsanti e sezioni
+      // Ottiene l'ID della sezione da mostrare
+      const tabId = this.getAttribute('data-tab');
+      
+      console.log('Clicked tab: ' + tabId); // Debug
+      
+      // Rimuove la classe active da tutti i pulsanti
       tabButtons.forEach(btn => btn.classList.remove('active'));
-      tabSections.forEach(section => section.classList.remove('active'));
       
       // Aggiunge la classe active al pulsante cliccato
       this.classList.add('active');
       
-      // Attiva la sezione corrispondente
-      const tabId = this.getAttribute('data-tab');
-      document.getElementById(`${tabId}-section`).classList.add('active');
+      // Nasconde tutte le sezioni
+      const tabSections = document.querySelectorAll('.tab-section');
+      tabSections.forEach(section => section.classList.remove('active'));
+      
+      // Mostra la sezione corrispondente
+      const targetSection = document.getElementById(tabId + '-section');
+      if (targetSection) {
+        targetSection.classList.add('active');
+      } else {
+        console.error('Section not found: ' + tabId + '-section');
+      }
     });
   });
 }
