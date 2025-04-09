@@ -10,33 +10,23 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeNutritionSummary();
 });
 
+// Configurazione delle tab dell'applicazione
 function setupTabs() {
   const tabButtons = document.querySelectorAll('.tab-button');
+  const tabSections = document.querySelectorAll('.tab-section');
   
   tabButtons.forEach(button => {
     button.addEventListener('click', function() {
-      // Ottiene l'ID della sezione da mostrare
-      const tabId = this.getAttribute('data-tab');
-      
-      console.log('Clicked tab: ' + tabId); // Debug
-      
-      // Rimuove la classe active da tutti i pulsanti
+      // Rimuove la classe active da tutti i pulsanti e sezioni
       tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabSections.forEach(section => section.classList.remove('active'));
       
       // Aggiunge la classe active al pulsante cliccato
       this.classList.add('active');
       
-      // Nasconde tutte le sezioni
-      const tabSections = document.querySelectorAll('.tab-section');
-      tabSections.forEach(section => section.classList.remove('active'));
-      
-      // Mostra la sezione corrispondente
-      const targetSection = document.getElementById(tabId + '-section');
-      if (targetSection) {
-        targetSection.classList.add('active');
-      } else {
-        console.error('Section not found: ' + tabId + '-section');
-      }
+      // Attiva la sezione corrispondente
+      const tabId = this.getAttribute('data-tab');
+      document.getElementById(`${tabId}-section`).classList.add('active');
     });
   });
 }
@@ -292,9 +282,8 @@ function showProfileDetails(profile) {
 // GESTIONE DATABASE ALIMENTI
 // ============================
 function initializeFoodDatabase() {
-  // Carica gli alimenti personalizzati e quelli nascosti
+  // Carica gli alimenti personalizzati
   const customFoods = loadFromLocalStorage('customFoods', {});
-  const hiddenFoods = loadFromLocalStorage('hiddenFoods', {});
   
   // Popola il selettore di categorie
   const categorySelect = document.getElementById('food-category');
@@ -306,13 +295,12 @@ function initializeFoodDatabase() {
   
   categorySelect.innerHTML = options;
   
-  // Mostra gli alimenti della categoria selezionata, filtrando quelli nascosti
-  const selectedCategory = categorySelect.value;
-  showFoodsForCategory(selectedCategory, customFoods, hiddenFoods);
+  // Mostra gli alimenti della categoria selezionata
+  showFoodsForCategory(categorySelect.value, customFoods);
   
   // Evento cambio categoria
   categorySelect.addEventListener('change', function() {
-    showFoodsForCategory(this.value, customFoods, hiddenFoods);
+    showFoodsForCategory(this.value, customFoods);
   });
   
   // Evento aggiunta nuovo alimento
@@ -351,7 +339,7 @@ function initializeFoodDatabase() {
     saveToLocalStorage('customFoods', customFoods);
     
     // Aggiorna la visualizzazione
-    showFoodsForCategory(category, customFoods, hiddenFoods);
+    showFoodsForCategory(category, customFoods);
     
     // Resetta il form
     document.getElementById('food-name').value = '';
@@ -361,46 +349,14 @@ function initializeFoodDatabase() {
     document.getElementById('food-fat').value = '0';
     document.getElementById('food-portion').value = '';
   });
-  
-  // Aggiungi il pulsante per ripristinare gli alimenti nascosti
-  const exportImportSection = document.querySelector('.export-import-section .button-group');
-  const restoreButton = document.createElement('button');
-  restoreButton.id = 'restore-hidden-foods';
-  restoreButton.className = 'secondary-button';
-  restoreButton.textContent = 'Ripristina Alimenti Nascosti';
-  restoreButton.addEventListener('click', function() {
-    if (confirm('Vuoi ripristinare tutti gli alimenti nascosti?')) {
-      saveToLocalStorage('hiddenFoods', {});
-      showFoodsForCategory(categorySelect.value, customFoods, {});
-    }
-  });
-  exportImportSection.appendChild(restoreButton);
 }
 
-// Modifica la firma della funzione per accettare hiddenFoods con valore di default
-function showFoodsForCategory(category, customFoods, hiddenFoods = loadFromLocalStorage('hiddenFoods', {})) {
+function showFoodsForCategory(category, customFoods) {
   const foodTableContainer = document.getElementById('food-table-container');
   const categoryTitle = document.getElementById('category-title');
 
   // Imposta il titolo della categoria
   categoryTitle.textContent = `Alimenti in ${categoryNames[category]}`;
-
-// Ottiene gli alimenti predefiniti e personalizzati
-  let defaultFoods = foodDatabase[category] || [];
-  const userFoods = customFoods[category] || [];
-  
-  // AGGIUNGI QUESTO BLOCCO: Filtra gli alimenti nascosti
-  if (hiddenFoods[category] && hiddenFoods[category].length > 0) {
-    defaultFoods = defaultFoods.filter(food => !hiddenFoods[category].includes(food.id));
-  }
-  
-  const allFoods = [...defaultFoods, ...userFoods];
-
-  // Il resto della funzione rimane invariato...
-  if (allFoods.length === 0) {
-    foodTableContainer.innerHTML = '<p>Nessun alimento disponibile in questa categoria.</p>';
-    return;
-  }
 
   // Ottiene gli alimenti predefiniti e personalizzati
   const defaultFoods = foodDatabase[category] || [];
@@ -418,9 +374,8 @@ function showFoodsForCategory(category, customFoods, hiddenFoods = loadFromLocal
   allFoods.forEach(food => {
     const isCustom = food.id.startsWith('custom');
     html += `
-      <div class="food-card ${isCustom ? 'custom-food' : ''}" data-food-id="${food.id}">
+      <div class="food-card ${isCustom ? 'custom-food' : ''}">
         <div class="food-card-name">${food.name}</div>
-        <button class="food-delete-button" data-food-id="${food.id}" data-category="${category}" data-custom="${isCustom}">×</button>
         <div class="food-card-details">
           <div class="food-card-detail">Calorie: <span>${food.calories}</span></div>
           <div class="food-card-detail">Proteine: <span>${food.protein}g</span></div>
@@ -434,55 +389,6 @@ function showFoodsForCategory(category, customFoods, hiddenFoods = loadFromLocal
 
   html += '</div>';
   foodTableContainer.innerHTML = html;
-
-  // Aggiungi event listener ai pulsanti di eliminazione
-  document.querySelectorAll('.food-delete-button').forEach(button => {
-    button.addEventListener('click', function(event) {
-      event.stopPropagation(); // Evita la propagazione dell'evento
-      const foodId = this.getAttribute('data-food-id');
-      const category = this.getAttribute('data-category');
-      const isCustom = this.getAttribute('data-custom') === 'true';
-      
-      deleteFood(foodId, category, isCustom, customFoods);
-    });
-  });
-}
-
-function deleteFood(foodId, category, isCustom, customFoods) {
-  // Verifica se è un alimento personalizzato o predefinito
-  if (isCustom) {
-    // Per gli alimenti personalizzati, chiedi conferma
-    if (confirm('Sei sicuro di voler eliminare questo alimento personalizzato?')) {
-      // Rimuovi l'alimento dal database personalizzato
-      if (customFoods[category]) {
-        customFoods[category] = customFoods[category].filter(food => food.id !== foodId);
-        saveToLocalStorage('customFoods', customFoods);
-        
-        // Aggiorna la visualizzazione
-        showFoodsForCategory(category, customFoods);
-      }
-    }
-  } else {
-    // Per gli alimenti predefiniti, avvisa che saranno nascosti ma non eliminati completamente
-    if (confirm('Gli alimenti predefiniti non possono essere eliminati definitivamente, ma saranno nascosti dalla visualizzazione. Vuoi procedere?')) {
-      // Ottieni la lista degli alimenti nascosti
-      let hiddenFoods = loadFromLocalStorage('hiddenFoods', {});
-      
-      // Aggiungi l'alimento alla lista degli alimenti nascosti
-      if (!hiddenFoods[category]) {
-        hiddenFoods[category] = [];
-      }
-      
-      // Verifica che l'alimento non sia già nascosto
-      if (!hiddenFoods[category].includes(foodId)) {
-        hiddenFoods[category].push(foodId);
-        saveToLocalStorage('hiddenFoods', hiddenFoods);
-      }
-      
-      // Aggiorna la visualizzazione
-      showFoodsForCategory(category, customFoods);
-    }
-  }
 }
 
 // ============================
